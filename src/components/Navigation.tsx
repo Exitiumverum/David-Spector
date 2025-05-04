@@ -86,13 +86,9 @@ export default function Navigation() {
           {/* Mobile Menu Button */}
           <button
             onClick={() => setIsMenuOpen(!isMenuOpen)}
-            className="md:hidden p-2 text-gray-700 hover:text-yellow-600 transition-colors"
+            className={`md:hidden p-2 text-gray-700 hover:text-yellow-600 transition-colors ${isMenuOpen ? 'hidden' : 'block'}`}
           >
-            {isMenuOpen ? (
-              <X className="w-6 h-6" />
-            ) : (
-              <Menu className="w-6 h-6" />
-            )}
+            <Menu className="w-6 h-6" />
           </button>
         </div>
       </nav>
@@ -105,8 +101,16 @@ export default function Navigation() {
             animate={{ opacity: 1, y: 0 }}
             exit={{ opacity: 0, y: -20 }}
             transition={{ duration: 0.2 }}
-            className="md:hidden fixed inset-0 bg-white/95 backdrop-blur-sm z-40"
+            className="md:hidden absolute inset-0 bg-white/95 backdrop-blur-sm z-40"
           >
+            {/* Close Button */}
+            <button
+              onClick={() => setIsMenuOpen(false)}
+              className="absolute top-6 left-6 p-2 text-gray-700 hover:text-yellow-600 transition-colors"
+            >
+              <X className="w-8 h-8" />
+            </button>
+
             <div className="h-full flex flex-col items-center justify-center gap-8">
               {navItems.map((item) => (
                 <button

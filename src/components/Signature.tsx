@@ -5,7 +5,7 @@ export default function Signature() {
     <svg
       xmlns="http://www.w3.org/2000/svg"
       viewBox="0 0 3150 1750"
-      className="w-40 h-auto"
+      className="w-24 md:w-40 h-auto transition-all duration-300"
       preserveAspectRatio="xMidYMid meet"
     >
       <image
