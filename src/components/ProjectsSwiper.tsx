@@ -66,19 +66,19 @@ export default function ProjectsSwiper() {
 
   if (loading) {
     return (
-      <section className="py-20 bg-black">
+      <section className="py-20 bg-white">
         <div className="max-w-6xl mx-auto px-4">
-          <h2 className="text-3xl font-light mb-12 text-center text-amber-100">פרויקטים נבחרים</h2>
-          <div className="relative h-[600px] bg-gray-800 animate-pulse" />
+          <h2 className="text-3xl font-light mb-12 text-center text-gray-900">פרויקטים נבחרים</h2>
+          <div className="relative h-[600px] bg-gray-100 animate-pulse" />
         </div>
       </section>
     );
   }
 
   return (
-    <section className="py-20 bg-black">
+    <section className="py-20 bg-white">
       <div className="max-w-6xl mx-auto px-4">
-        <h2 className="text-3xl font-light mb-12 text-center text-amber-100">פרויקטים נבחרים</h2>
+        <h2 className="text-3xl font-light mb-12 text-center text-gray-900">פרויקטים נבחרים</h2>
         <Swiper
           modules={[Navigation, Pagination, Autoplay, EffectFade]}
           effect="fade"
@@ -94,7 +94,7 @@ export default function ProjectsSwiper() {
             bulletClass: 'swiper-pagination-bullet',
             bulletActiveClass: 'swiper-pagination-bullet-active',
             renderBullet: function (index, className) {
-              return `<span class="${className} bg-amber-500"></span>`;
+              return `<span class="${className} bg-yellow-600"></span>`;
             },
           }}
           autoplay={{
@@ -114,23 +114,23 @@ export default function ProjectsSwiper() {
                   className="object-cover transition-transform duration-700 group-hover:scale-105"
                   priority
                 />
-                <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/40 to-transparent" />
+                <div className="absolute inset-0 bg-gradient-to-t from-black/70 via-black/30 to-transparent" />
                 <div className="absolute bottom-0 left-0 right-0 p-8 text-white transform translate-y-0 transition-all duration-500">
                   <div className="max-w-2xl mx-auto">
                     <div className="flex items-center gap-4 mb-4">
-                      <span className="text-amber-500 text-2xl font-light">{project.id}</span>
-                      <div className="h-px w-16 bg-amber-500" />
+                      <span className="text-yellow-400 text-2xl font-light">{project.id}</span>
+                      <div className="h-px w-16 bg-yellow-400" />
                     </div>
                     <h3 className="text-3xl font-light mb-2">{project.title}</h3>
-                    <p className="text-amber-100/80">{project.description}</p>
+                    <p className="text-gray-200">{project.description}</p>
                   </div>
                 </div>
               </div>
             </SwiperSlide>
           ))}
           <div className="swiper-pagination !bottom-8" />
-          <div className="swiper-button-next !text-amber-500 after:!text-2xl" />
-          <div className="swiper-button-prev !text-amber-500 after:!text-2xl" />
+          <div className="swiper-button-next !text-yellow-600 after:!text-2xl" />
+          <div className="swiper-button-prev !text-yellow-600 after:!text-2xl" />
         </Swiper>
       </div>
     </section>

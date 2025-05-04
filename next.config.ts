@@ -1,7 +1,17 @@
 import type { NextConfig } from "next";
 
 const nextConfig: NextConfig = {
-  /* config options here */
+  reactStrictMode: true,
+  swcMinify: true,
+  images: {
+    domains: ['localhost'],
+  },
+  async redirects() {
+    return [];
+  },
+  async rewrites() {
+    return [];
+  },
 };
 
 export default nextConfig;

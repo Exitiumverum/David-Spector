@@ -59,14 +59,14 @@ export default function ProjectsPage() {
 
   if (loading) {
     return (
-      <div className="min-h-screen bg-black flex items-center justify-center">
-        <div className="animate-pulse text-amber-500 text-xl">טוען פרויקטים...</div>
+      <div className="min-h-screen bg-white flex items-center justify-center">
+        <div className="animate-pulse text-yellow-600 text-xl">טוען פרויקטים...</div>
       </div>
     );
   }
 
   return (
-    <main className="min-h-screen bg-black text-white">
+    <main className="min-h-screen bg-white text-gray-900">
       <div className="max-w-7xl mx-auto px-4 py-20">
         <motion.div
           initial={{ opacity: 0, y: 20 }}
@@ -74,8 +74,8 @@ export default function ProjectsPage() {
           transition={{ duration: 0.8 }}
           className="text-center mb-16"
         >
-          <h1 className="text-4xl md:text-5xl font-light mb-4 text-amber-100">פרויקטים</h1>
-          <p className="text-amber-100/70 max-w-2xl mx-auto">
+          <h1 className="text-4xl md:text-5xl font-light mb-4">פרויקטים</h1>
+          <p className="text-gray-600 max-w-2xl mx-auto">
             גלריית הפרויקטים שלנו מציגה את העבודה שלנו בתחום האדריכלות ועיצוב הפנים
           </p>
         </motion.div>
@@ -87,7 +87,7 @@ export default function ProjectsPage() {
               initial={{ opacity: 0, y: 20 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ duration: 0.5, delay: index * 0.1 }}
-              className="group relative overflow-hidden cursor-pointer"
+              className="group relative overflow-hidden cursor-pointer rounded-lg shadow-lg"
               onClick={() => router.push(`/projects/${project.id}`)}
             >
               <div className="relative h-[400px]">
@@ -97,14 +97,14 @@ export default function ProjectsPage() {
                   fill
                   className="object-cover transition-transform duration-700 group-hover:scale-110"
                 />
-                <div className="absolute inset-0 bg-gradient-to-t from-black/90 via-black/40 to-transparent" />
+                <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/30 to-transparent" />
                 <div className="absolute bottom-0 left-0 right-0 p-6 transform translate-y-full group-hover:translate-y-0 transition-transform duration-500">
                   <div className="flex items-center gap-4 mb-4">
-                    <span className="text-amber-500 text-2xl font-light">{project.id}</span>
-                    <div className="h-px w-16 bg-amber-500" />
+                    <span className="text-yellow-400 text-2xl font-light">{project.id}</span>
+                    <div className="h-px w-16 bg-yellow-400" />
                   </div>
-                  <h3 className="text-2xl font-light mb-2">{project.title}</h3>
-                  <p className="text-amber-100/80">{project.description}</p>
+                  <h3 className="text-2xl font-light mb-2 text-white">{project.title}</h3>
+                  <p className="text-gray-200">{project.description}</p>
                 </div>
               </div>
             </motion.div>
