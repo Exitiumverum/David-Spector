@@ -2,6 +2,7 @@
 
 import Image from "next/image";
 import ProjectsSwiper from "@/components/ProjectsSwiper";
+import ContactModal from "@/components/ContactModal";
 import { useRouter } from "next/navigation";
 
 export default function Home() {
@@ -83,6 +84,7 @@ export default function Home() {
       </section>
 
       {/* Contact Section */}
+      <ContactModal />
       <section className="py-20 px-4 md:px-8 max-w-6xl mx-auto">
         <div className="text-center">
           <h2 className="text-3xl font-light mb-8">בואו ניצור משהו יוצא דופן</h2>
