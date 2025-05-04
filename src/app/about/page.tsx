@@ -1,5 +1,7 @@
 'use client';
 
+import Image from 'next/image';
+
 export default function AboutPage() {
   return (
     <main className="min-h-screen bg-white text-gray-900">
@@ -16,10 +18,12 @@ export default function AboutPage() {
             </p>
           </div>
           <div className="relative h-[400px]">
-            <img
+            <Image
               src="/images/Logos/DavidSpector.jpeg"
               alt="דוד ספקטור"
-              className="object-cover w-full h-full rounded-lg shadow-lg"
+              fill
+              className="object-cover rounded-lg shadow-lg"
+              priority
             />
           </div>
         </div>
