@@ -9,7 +9,7 @@ export default function Signature() {
       preserveAspectRatio="xMidYMid meet"
     >
       <image
-        href="/images/Logos/Logo03.svg"
+        href="/images/Logos/logo04.svg"
         width="3150"
         height="1750"
         preserveAspectRatio="xMidYMid meet"
