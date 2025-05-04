@@ -56,67 +56,24 @@ export default function Navigation() {
   };
 
   return (
-    <header className={`fixed top-0 left-0 right-0 z-50 transition-all duration-300 ${isScrolled ? 'bg-white/90 backdrop-blur-sm' : 'bg-transparent'}`}>
-      <nav className="max-w-7xl mx-auto px-4 py-4">
-        <div className="flex justify-between items-center">
-          <div 
-            onClick={() => handleNavigation('/')} 
-            className="cursor-pointer"
-          >
-            <Signature />
-          </div>
-          
-          {/* Desktop Navigation */}
-          <div className="hidden md:flex gap-8">
-            {navItems.map((item) => (
-              <button
-                key={item.href}
-                onClick={() => handleNavigation(item.href)}
-                className={`text-sm font-light transition-colors duration-300 cursor-pointer ${
-                  pathname === item.href
-                    ? 'text-yellow-600'
-                    : 'text-gray-700 hover:text-yellow-600'
-                }`}
-              >
-                {item.label}
-              </button>
-            ))}
-          </div>
-
-          {/* Mobile Menu Button */}
-          <button
-            onClick={() => setIsMenuOpen(!isMenuOpen)}
-            className={`md:hidden p-2 text-gray-700 hover:text-yellow-600 transition-colors ${isMenuOpen ? 'hidden' : 'block'}`}
-          >
-            <Menu className="w-6 h-6" />
-          </button>
-        </div>
-      </nav>
-
-      {/* Mobile Menu */}
-      <AnimatePresence>
-        {isMenuOpen && (
-          <motion.div
-            initial={{ opacity: 0, y: -20 }}
-            animate={{ opacity: 1, y: 0 }}
-            exit={{ opacity: 0, y: -20 }}
-            transition={{ duration: 0.2 }}
-            className="md:hidden absolute inset-0 bg-white/95 backdrop-blur-sm z-40"
-          >
-            {/* Close Button */}
-            <button
-              onClick={() => setIsMenuOpen(false)}
-              className="absolute top-6 left-6 p-2 text-gray-700 hover:text-yellow-600 transition-colors"
+    <>
+      <header className={`fixed top-0 left-0 right-0 z-30 transition-all duration-300 ${isScrolled ? 'bg-white/90 backdrop-blur-sm' : 'bg-transparent'} ${isMenuOpen ? 'hidden' : 'block'}`}>
+        <nav className="max-w-7xl mx-auto px-4 py-4">
+          <div className="flex justify-between items-center">
+            <div 
+              onClick={() => handleNavigation('/')} 
+              className="cursor-pointer"
             >
-              <X className="w-8 h-8" />
-            </button>
-
-            <div className="h-full flex flex-col items-center justify-center gap-8">
+              <Signature />
+            </div>
+            
+            {/* Desktop Navigation */}
+            <div className="hidden md:flex gap-8">
               {navItems.map((item) => (
                 <button
                   key={item.href}
                   onClick={() => handleNavigation(item.href)}
-                  className={`text-2xl font-light transition-colors duration-300 ${
+                  className={`text-sm font-light transition-colors duration-300 cursor-pointer ${
                     pathname === item.href
                       ? 'text-yellow-600'
                       : 'text-gray-700 hover:text-yellow-600'
@@ -126,9 +83,70 @@ export default function Navigation() {
                 </button>
               ))}
             </div>
+
+            {/* Mobile Menu Button */}
+            <button
+              onClick={() => setIsMenuOpen(!isMenuOpen)}
+              className={`md:hidden p-2 text-gray-700 hover:text-yellow-600 transition-colors ${isMenuOpen ? 'hidden' : 'block'}`}
+            >
+              <Menu className="w-6 h-6" />
+            </button>
+          </div>
+        </nav>
+      </header>
+
+      {/* Mobile Menu */}
+      <AnimatePresence>
+        {isMenuOpen && (
+          <motion.div
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            exit={{ opacity: 0 }}
+            transition={{ duration: 0.2 }}
+            className="md:hidden fixed inset-0 bg-white z-40"
+          >
+            <div className="h-full flex flex-col">
+              {/* Top Bar with Signature and Close Button */}
+              <div className="flex justify-between items-center p-4">
+                <div 
+                  onClick={() => handleNavigation('/')} 
+                  className="cursor-pointer"
+                >
+                  <Signature />
+                </div>
+                <button
+                  type="button"
+                  onClick={() => {
+                    console.log('Closing menu');
+                    setIsMenuOpen(false);
+                  }}
+                  className="p-2 text-gray-700 hover:text-yellow-600 transition-colors"
+                  aria-label="Close menu"
+                >
+                  <X className="w-8 h-8" />
+                </button>
+              </div>
+
+              {/* Menu Items */}
+              <div className="flex-1 flex flex-col items-center justify-center gap-8">
+                {navItems.map((item) => (
+                  <button
+                    key={item.href}
+                    onClick={() => handleNavigation(item.href)}
+                    className={`text-2xl font-light transition-colors duration-300 ${
+                      pathname === item.href
+                        ? 'text-yellow-600'
+                        : 'text-gray-700 hover:text-yellow-600'
+                    }`}
+                  >
+                    {item.label}
+                  </button>
+                ))}
+              </div>
+            </div>
           </motion.div>
         )}
       </AnimatePresence>
-    </header>
+    </>
   );
 } 
