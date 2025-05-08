@@ -41,31 +41,40 @@ export default function ProjectsPage() {
     const mockProjects: Project[] = [
       {
         id: 'athens-apartment',
-        title: 'דירה באתונה',
+        title: 'דירת 34 מ"ר באתונה',
         description: 'עיצוב מחדש לדירה באתונה',
         image: '/images/projects/athens/01.png',
         category: 'apartments',
         location: 'אתונה',
-        size: '38 מ"ר'
+        size: '34 מ"ר'
       },
       {
         id: 'athens-penthouse',
         title: 'פנטהאוס באתונה',
         description: 'עיצוב פנטהאוס יוקרתי באתונה',
-        image: '/images/projects/athens-penthouse/01.png',
+        image: '/images/projects/athens-penthouse/01.jpg',
         category: 'apartments',
         location: 'אתונה',
-        size: '60 מ"ר'
+        size: '38 מ"ר'
       },
       {
-        id: 'athens-24m',
-        title: 'דירת 24 מ"ר באתונה',
+          id: 'athens-21m',
+          title: 'דירת 21 מ"ר באתונה',
+          description: 'עיצוב דירה קומפקטית באתונה',
+          image: '/images/projects/athens-21m/01.png',
+          category: 'apartments',
+          location: 'אתונה',
+          size: '21 מ"ר'
+        },
+      {
+        id: 'athens-26m',
+        title: 'דירת 26 מ"ר באתונה',
         description: 'עיצוב דירה קומפקטית באתונה',
-        image: '/images/projects/athens-24m/01.png',
+        image: '/images/projects/athens-26m/01.png',
         category: 'apartments',
         location: 'אתונה',
-        size: '24 מ"ר'
-      },
+        size: '26 מ"ר'
+      }
       // Add more projects here
     ];
 
@@ -160,10 +169,10 @@ export default function ProjectsPage() {
                     <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/30 to-transparent" />
                     <div className="absolute bottom-0 left-0 right-0 p-6 transform translate-y-full group-hover:translate-y-0 transition-transform duration-500">
                       <div className="flex items-center gap-4 mb-4">
-                        <span className="text-yellow-400 text-2xl font-light">{project.id}</span>
+                        <span className="text-yellow-400 text-2xl font-light">{project.title}</span>
                         <div className="h-px w-16 bg-yellow-400" />
                       </div>
-                      <h3 className="text-2xl font-light mb-2 text-white">{project.title}</h3>
+                      {/* <h3 className="text-2xl font-light mb-2 text-white">{project.title}</h3> */}
                       <p className="text-gray-200">{project.description}</p>
                       <div className="mt-4 flex gap-4 text-sm text-gray-300">
                         <span>{project.location}</span>

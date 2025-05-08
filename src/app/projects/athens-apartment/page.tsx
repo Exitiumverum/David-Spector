@@ -8,6 +8,7 @@ import { Navigation, Pagination, Autoplay } from 'swiper/modules';
 import 'swiper/css';
 import 'swiper/css/navigation';
 import 'swiper/css/pagination';
+import { useRouter } from 'next/navigation';
 
 export default function AthensApartmentPage() {
   const bannerImage = '/images/projects/athens/04.png';
@@ -26,10 +27,10 @@ export default function AthensApartmentPage() {
     '/images/projects/athens/06.png',
     '/images/projects/athens/07.png',
     '/images/projects/athens/08.png',
-    '/images/projects/athens/09.png',
-    '/images/projects/athens/10.png',
-    '/images/projects/athens/11.png',
-    '/images/projects/athens/12.png',
+    // '/images/projects/athens/09.png',
+    // '/images/projects/athens/10.png',
+    // '/images/projects/athens/11.png',
+    // '/images/projects/athens/12.png',
   ];
 
   return (
@@ -51,23 +52,38 @@ export default function AthensApartmentPage() {
             transition={{ duration: 0.8 }}
             className="text-center text-white"
           >
-            <h1 className="text-5xl md:text-7xl font-light mb-4">נטהאוס באתונה</h1>
-            <p className="text-xl md:text-2xl">עיצוב מחדש לפנטהאוס נטוש באתונה</p>
+            <h1 className="text-5xl md:text-7xl font-light mb-4">דירה באתונה</h1>
+            <p className="text-xl md:text-2xl">עיצוב מחדש לדירה באתונה</p>
           </motion.div>
         </div>
       </div>
+
 
       {/* Content Section */}
       <div className="max-w-7xl mx-auto px-4 py-20">
         <div className="grid grid-cols-1 md:grid-cols-2 gap-8 mb-20">
           <div>
             <h2 className="text-3xl font-light mb-6 text-black">הפרויקט</h2>
-            <p className="text-black mb-4">
-              פרויקט עיצוב מחדש לפנטהאוס נטוש באתונה. המטרה הייתה ליצור חלל מודרני ופונקציונלי תוך שמירה על האופי המקורי של הבניין.
-            </p>
-            <p className="text-black">
+            <div className="space-y-4">
+              <p className="text-black">
+                הלקוח ביקש שאתכנן שיפוץ לדירה מוזנחת שכללה שטח גדול יחסית לדירת סטודיו ושתי מרפסות.
+              </p>
+              <p className="text-black">
+                קיבלתי חופש תכנוני מלא ובחרתי לבצע שינויים מבניים מינוריים שאפשרו לפתוח את החלל עבור מעבר אור מהמרפסות.
+              </p>
+              <p className="text-black">
+                הרחבתי את מבואת הכניסה והסבתי אותה לפינת מגורים.
+              </p>
+              <p className="text-black">
+                את המטבח עיצבתי מחדש בחלל הצר שבו מוקם, ובחרתי בשפה עיצובית בהירה ורכה שמשדרת חמימות.
+              </p>
+              <p className="text-black">
+                כל אזור בדירה קיבל אופי משלו תוך שמירה על אחידות, כולל מרפסת עם כיסא נדנדה מפנק.
+              </p>
+            </div>
+            {/* <p className="text-black">
               הפרויקט כולל עיצוב מחדש של כל החללים, כולל חדר שינה, חדר עבודה, חדר רחצה, מטבח פתוח ומרפסת עם ג'קוזי.
-            </p>
+            </p> */}
           </div>
           <div>
             <h2 className="text-3xl font-light mb-6 text-black">פרטים</h2>
@@ -83,36 +99,24 @@ export default function AthensApartmentPage() {
             </div>
           </div>
         </div>
-
+        <hr className="my-12 border-t-4 border-yellow-400 rounded-full" />
         {/* Before/After Section */}
         <div className="mb-20">
           <h2 className="text-3xl font-light mb-12 text-center text-black">לפני ואחרי</h2>
           <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
-            <div className="space-y-4">
-              <h3 className="text-xl font-light text-center mb-6 text-black">לפני</h3>
-              <div className="relative h-[600px] rounded-lg overflow-hidden">
-                <Image
-                  src={beforeImage}
-                  alt="Before"
-                  fill
-                  className="object-cover"
-                />
-              </div>
-            </div>
-            <div className="space-y-4">
-              <h3 className="text-xl font-light text-center mb-6 text-black">אחרי</h3>
-              <div className="relative h-[600px] rounded-lg overflow-hidden">
-                <Image
-                  src={afterImage}
-                  alt="After"
-                  fill
-                  className="object-cover"
-                />
-              </div>
-            </div>
+            <BeforeAfterToggle
+              beforeImg="/images/projects/athens/Before01.png"
+              afterImg="/images/projects/athens/05.png"
+              label="לפני ואחרי - מטבח"
+            />
+            <BeforeAfterToggle
+              beforeImg="/images/projects/athens/Before02.png"
+              afterImg="/images/projects/athens/03.png"
+              label="לפני ואחרי - חדר רחצה"
+            />
           </div>
         </div>
-
+        <hr className="my-12 border-t-4 border-yellow-400 rounded-full" />
         {/* Image Gallery Swiper */}
         <div className="mb-20">
           <h2 className="text-3xl font-light mb-12 text-center text-black">גלריית תמונות</h2>
@@ -126,7 +130,7 @@ export default function AthensApartmentPage() {
               delay: 5000,
               disableOnInteraction: false,
             }}
-            className="h-[800px]"
+            className="h-72 md:h-[400px] lg:h-[500px]"
           >
             {galleryImages.map((image, index) => (
               <SwiperSlide key={index}>
@@ -166,5 +170,85 @@ export default function AthensApartmentPage() {
         }
       `}</style>
     </main>
+  );
+}
+
+function BeforeAfterToggle({ beforeImg, afterImg, label }: { beforeImg: string; afterImg: string; label: string }) {
+  const [showAfter, setShowAfter] = useState(false);
+  return (
+    <div className="space-y-4 flex flex-col items-center">
+      <h3 className="text-xl font-light text-center mb-2 text-black">{label}</h3>
+      <div className="relative w-full max-w-2xl aspect-video rounded-lg overflow-hidden bg-gray-100">
+        <Image
+          src={showAfter ? afterImg : beforeImg}
+          alt={label}
+          fill
+          className="object-contain"
+          sizes="(max-width: 768px) 100vw, 800px"
+        />
+      </div>
+      <button
+        className="mt-2 px-4 py-2 bg-yellow-400 text-black rounded hover:bg-yellow-500 transition"
+        onClick={() => setShowAfter((prev) => !prev)}
+      >
+        {showAfter ? 'הצג לפני' : 'הצג אחרי'}
+      </button>
+    </div>
+  );
+}
+
+function BestProjectsSwiper() {
+  const router = useRouter();
+  const projects = [
+    {
+      href: '/projects/athens-penthouse',
+      img: '/images/projects/athens-penthouse/01.jpg',
+      title: 'פנטהאוס באתונה',
+    },
+    {
+      href: '/projects/athens-26m',
+      img: '/images/projects/athens-26m/01.png',
+      title: 'דירת 26 מ"ר באתונה',
+    },
+    {
+      href: '/projects/athens-21m',
+      img: '/images/projects/athens-21m/01.png',
+      title: 'דירת 21 מ"ר באתונה',
+    },
+  ];
+  return (
+    <Swiper
+      modules={[Navigation, Pagination, Autoplay]}
+      spaceBetween={30}
+      slidesPerView={1}
+      navigation
+      pagination={{ clickable: true }}
+      autoplay={{ delay: 5000, disableOnInteraction: false }}
+      className="h-80 md:h-[350px] lg:h-[400px]"
+    >
+      {projects.map((project, idx) => (
+        <SwiperSlide key={idx}>
+          <div
+            className="relative h-full w-full rounded-lg overflow-hidden shadow-lg cursor-pointer"
+            onClick={() => router.push(project.href)}
+            tabIndex={0}
+            role="button"
+            aria-label={project.title}
+            onKeyDown={e => { if (e.key === 'Enter') router.push(project.href); }}
+          >
+            <Image
+              src={project.img}
+              alt={project.title}
+              fill
+              className="object-cover"
+              sizes="(max-width: 768px) 100vw, 800px"
+            />
+            <div className="absolute bottom-0 left-0 right-0 bg-black/60 p-4">
+              <h3 className="text-2xl text-white font-bold">{project.title}</h3>
+            </div>
+          </div>
+        </SwiperSlide>
+      ))}
+    </Swiper>
   );
 } 

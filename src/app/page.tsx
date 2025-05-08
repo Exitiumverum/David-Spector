@@ -4,6 +4,11 @@ import Image from "next/image";
 import ProjectsSwiper from "@/components/ProjectsSwiper";
 import ContactModal from "@/components/ContactModal";
 import { useRouter } from "next/navigation";
+import { Swiper, SwiperSlide } from 'swiper/react';
+import { Navigation, Pagination, Autoplay } from 'swiper/modules';
+import 'swiper/css';
+import 'swiper/css/navigation';
+import 'swiper/css/pagination';
 
 export default function Home() {
   const router = useRouter();
@@ -35,7 +40,7 @@ export default function Home() {
       </section>
 
       {/* Projects Swiper Section */}
-      <ProjectsSwiper />
+      <BestProjectsSwiper />
 
       {/* About Section */}
       <section className="py-20 px-4 md:px-8 max-w-6xl mx-auto">
@@ -62,28 +67,6 @@ export default function Home() {
         </div>
       </section>
 
-      {/* Featured Work Section */}
-      <section className="py-20 bg-gray-100">
-        <div className="max-w-6xl mx-auto px-4 md:px-8">
-          <h2 className="text-3xl font-light mb-12 text-center">פרויקטים נבחרים</h2>
-          <div className="grid md:grid-cols-3 gap-8">
-            {[1, 2, 3].map((project) => (
-              <div key={project} className="group">
-                <div className="relative h-[300px] mb-4">
-                  <Image
-                    src={`/project-${project}.jpg`}
-                    alt={`פרויקט ${project}`}
-                    fill
-                    className="object-cover group-hover:opacity-90 transition-opacity duration-300"
-                  />
-                </div>
-                <h3 className="text-xl font-light mb-2">פרויקט {project}</h3>
-                <p className="text-gray-600">מגורים / מסחרי</p>
-              </div>
-            ))}
-          </div>
-        </div>
-      </section>
 
       {/* Contact Section */}
       <ContactModal />
@@ -111,5 +94,83 @@ export default function Home() {
         </div>
       </footer>
     </main>
+  );
+}
+
+function BestProjectsSwiper() {
+  const router = useRouter();
+  const projects = [
+    {
+      href: '/projects/athens-penthouse',
+      img: '/images/projects/athens-penthouse/01.jpg',
+      title: 'פנטהאוס באתונה',
+    },
+    {
+      href: '/projects/athens-26m',
+      img: '/images/projects/athens-26m/01.png',
+      title: 'דירת 26 מ"ר באתונה',
+    },
+    {
+      href: '/projects/athens-21m',
+      img: '/images/projects/athens-21m/01.png',
+      title: 'דירת 21 מ"ר באתונה',
+    },
+  ];
+  return (
+    <div className="max-w-5xl mx-auto px-4 py-12">
+      <h2 className="text-3xl font-light mb-8 text-center text-black">הפרויקטים הבולטים</h2>
+      <Swiper
+        modules={[Navigation, Pagination, Autoplay]}
+        spaceBetween={30}
+        slidesPerView={1}
+        navigation
+        pagination={{ clickable: true }}
+        autoplay={{ delay: 5000, disableOnInteraction: false }}
+        className="h-80 md:h-[350px] lg:h-[400px]"
+      >
+        {projects.map((project, idx) => (
+          <SwiperSlide key={idx}>
+            <div
+              className="relative h-full w-full rounded-lg overflow-hidden shadow-lg cursor-pointer"
+              onClick={() => router.push(project.href)}
+              tabIndex={0}
+              role="button"
+              aria-label={project.title}
+              onKeyDown={e => { if (e.key === 'Enter') router.push(project.href); }}
+            >
+              <Image
+                src={project.img}
+                alt={project.title}
+                fill
+                className="object-cover"
+                sizes="(max-width: 768px) 100vw, 800px"
+              />
+              <div className="absolute bottom-0 left-0 right-0 bg-black/60 p-4">
+                <h3 className="text-2xl text-white font-bold">{project.title}</h3>
+              </div>
+            </div>
+          </SwiperSlide>
+        ))}
+      </Swiper>
+      <style jsx global>{`
+        .swiper-button-next,
+        .swiper-button-prev {
+          color: #facc15;
+        }
+        .swiper-button-next:after,
+        .swiper-button-prev:after {
+          color: #facc15;
+          font-weight: bold;
+        }
+        .swiper-pagination-bullet {
+          background: #facc15;
+          opacity: 0.5;
+        }
+        .swiper-pagination-bullet-active {
+          background: #facc15;
+          opacity: 1;
+        }
+      `}</style>
+    </div>
   );
 }
