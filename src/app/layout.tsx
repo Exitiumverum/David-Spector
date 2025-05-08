@@ -12,7 +12,7 @@ const dancingScript = Dancing_Script({
 
 export const metadata: Metadata = {
   title: "דוד ספקטור - אדריכלות ועיצוב פנים",
-  description: "דוד ספקטור - אדריכל ועיצוב פנים מקצועי עם ניסיון של מעל 15 שנים",
+  description: "דוד ספקטור - אדריכל ועיצוב פנים מקצועי עם ניסיון של מעל 5 שנים",
 };
 
 export default function RootLayout({
