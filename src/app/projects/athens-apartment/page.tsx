@@ -13,10 +13,6 @@ import { useRouter } from 'next/navigation';
 export default function AthensApartmentPage() {
   const bannerImage = '/images/projects/athens/04.png';
 
-  // Before and after images
-  const beforeImage = '/images/projects/athens/BnA01.png';
-  const afterImage = '/images/projects/athens/BnA02.png';
-
   // Gallery images
   const galleryImages = [
     '/images/projects/athens/01.png',
@@ -194,61 +190,5 @@ function BeforeAfterToggle({ beforeImg, afterImg, label }: { beforeImg: string; 
         {showAfter ? 'הצג לפני' : 'הצג אחרי'}
       </button>
     </div>
-  );
-}
-
-function BestProjectsSwiper() {
-  const router = useRouter();
-  const projects = [
-    {
-      href: '/projects/athens-penthouse',
-      img: '/images/projects/athens-penthouse/01.jpg',
-      title: 'פנטהאוס באתונה',
-    },
-    {
-      href: '/projects/athens-26m',
-      img: '/images/projects/athens-26m/01.png',
-      title: 'דירת 26 מ"ר באתונה',
-    },
-    {
-      href: '/projects/athens-21m',
-      img: '/images/projects/athens-21m/01.png',
-      title: 'דירת 21 מ"ר באתונה',
-    },
-  ];
-  return (
-    <Swiper
-      modules={[Navigation, Pagination, Autoplay]}
-      spaceBetween={30}
-      slidesPerView={1}
-      navigation
-      pagination={{ clickable: true }}
-      autoplay={{ delay: 5000, disableOnInteraction: false }}
-      className="h-80 md:h-[350px] lg:h-[400px]"
-    >
-      {projects.map((project, idx) => (
-        <SwiperSlide key={idx}>
-          <div
-            className="relative h-full w-full rounded-lg overflow-hidden shadow-lg cursor-pointer"
-            onClick={() => router.push(project.href)}
-            tabIndex={0}
-            role="button"
-            aria-label={project.title}
-            onKeyDown={e => { if (e.key === 'Enter') router.push(project.href); }}
-          >
-            <Image
-              src={project.img}
-              alt={project.title}
-              fill
-              className="object-cover"
-              sizes="(max-width: 768px) 100vw, 800px"
-            />
-            <div className="absolute bottom-0 left-0 right-0 bg-black/60 p-4">
-              <h3 className="text-2xl text-white font-bold">{project.title}</h3>
-            </div>
-          </div>
-        </SwiperSlide>
-      ))}
-    </Swiper>
   );
 } 

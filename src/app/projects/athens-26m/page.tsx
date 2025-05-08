@@ -10,8 +10,6 @@ import 'swiper/css/pagination';
 
 export default function Athens26mPage() {
   const bannerImage = '/images/projects/athens-26m/01.png';
-  const beforeImage = '/images/projects/athens-26m/BnA01.png';
-  const afterImage = '/images/projects/athens-26m/BnA02.png';
   const galleryImages = [
     '/images/projects/athens-26m/01.png',
     '/images/projects/athens-26m/02.png',
@@ -47,7 +45,7 @@ export default function Athens26mPage() {
                 בפרויקט זה נהניתי מחופש תכנוני מלא.
               </p>
               <p className="text-black">
-                על שטח של 26 מ"ר עם גינה, בחרתי לוותר על מחיצות לטובת תחושת מרחב וניצול אופטימלי של האור הטבעי.
+                על שטח של 26 מ&quot;ר עם גינה, בחרתי לוותר על מחיצות לטובת תחושת מרחב וניצול אופטימלי של האור הטבעי.
               </p>
               <p className="text-black">
                 יצרתי אזור שינה ועבודה מרווח, ומטבח פתוח ונוח.
@@ -75,7 +73,7 @@ export default function Athens26mPage() {
               </div>
               <div>
                 <p className="text-black">גודל</p>
-                <p className="font-medium text-black">26 מ"ר</p>
+                <p className="font-medium text-black">26 מ&quot;ר</p>
               </div>
             </div>
           </div>

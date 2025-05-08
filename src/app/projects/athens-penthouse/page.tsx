@@ -10,8 +10,6 @@ import 'swiper/css/pagination';
 
 export default function AthensPenthousePage() {
   const bannerImage = '/images/projects/athens-penthouse/01.jpg';
-  const beforeImage = '/images/projects/athens-penthouse/02.png';
-  const afterImage = '/images/projects/athens-penthouse/03.png';
   const galleryImages = [
     '/images/projects/athens-penthouse/01.jpg',
     '/images/projects/athens-penthouse/02.png',
@@ -53,7 +51,7 @@ export default function AthensPenthousePage() {
                 מיקמתי חדר רחצה מואר במקום המטבח, ואת המטבח העברתי לחלל המגורים הפתוח בוויטרינה.
               </p>
               <p className="text-black">
-                המרפסת כוללת ג'קוזי בנוי ופינת ישיבה מוקפת צמחייה.
+                המרפסת כוללת ג&apos;קוזי בנוי ופינת ישיבה מוקפת צמחייה.
               </p>
               <p className="text-black">
                 העיצוב שומר על תחושת חמימות מודרנית ומנצל את הנוף האורבני של אתונה.
@@ -69,7 +67,7 @@ export default function AthensPenthousePage() {
               </div>
               <div>
                 <p className="text-black">גודל</p>
-                <p className="font-medium text-black">38 מ"ר</p>
+                <p className="font-medium text-black">38 מ&quot;ר</p>
               </div>
             </div>
           </div>
