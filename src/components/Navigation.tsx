@@ -73,7 +73,7 @@ export default function Navigation() {
                 <button
                   key={item.href}
                   onClick={() => handleNavigation(item.href)}
-                  className={`text-sm font-light transition-colors duration-300 cursor-pointer ${
+                  className={`text-lg font-light transition-colors duration-300 cursor-pointer ${
                     pathname === item.href
                       ? 'text-yellow-600'
                       : 'text-gray-700 hover:text-yellow-600'

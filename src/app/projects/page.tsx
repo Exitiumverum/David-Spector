@@ -3,7 +3,7 @@
 import { useState, useEffect } from 'react';
 import Image from 'next/image';
 import { motion, AnimatePresence } from 'framer-motion';
-import ProjectPreview from '@/components/ProjectPreview';
+import Link from 'next/link';
 
 interface Project {
   id: string;
@@ -11,17 +11,8 @@ interface Project {
   description: string;
   image: string;
   category: 'apartments' | 'private-homes' | 'other-projects' | 'concepts';
-  images: string[];
-  beforeAfter?: {
-    before: string;
-    after: string;
-  };
-  details?: {
-    location: string;
-    year: string;
-    size: string;
-    status: string;
-  };
+  location: string;
+  size: string;
 }
 
 export default function ProjectsPage() {
@@ -29,7 +20,6 @@ export default function ProjectsPage() {
   const [projects, setProjects] = useState<Project[]>([]);
   const [loading, setLoading] = useState(true);
   const [activeCategory, setActiveCategory] = useState<string>('all');
-  const [selectedProject, setSelectedProject] = useState<Project | null>(null);
 
   const categories = [
     { id: 'all', label: 'הכל' },
@@ -47,148 +37,41 @@ export default function ProjectsPage() {
   useEffect(() => {
     if (!mounted) return;
 
-    let isMounted = true;
+    // Mock data for now - replace with actual API call later
+    const mockProjects: Project[] = [
+      {
+        id: 'athens-apartment',
+        title: 'דירה באתונה',
+        description: 'עיצוב מחדש לדירה באתונה',
+        image: '/images/projects/athens/01.png',
+        category: 'apartments',
+        location: 'אתונה',
+        size: '38 מ"ר'
+      },
+      {
+        id: 'athens-penthouse',
+        title: 'פנטהאוס באתונה',
+        description: 'עיצוב פנטהאוס יוקרתי באתונה',
+        image: '/images/projects/athens-penthouse/01.png',
+        category: 'apartments',
+        location: 'אתונה',
+        size: '60 מ"ר'
+      },
+      {
+        id: 'athens-24m',
+        title: 'דירת 24 מ"ר באתונה',
+        description: 'עיצוב דירה קומפקטית באתונה',
+        image: '/images/projects/athens-24m/01.png',
+        category: 'apartments',
+        location: 'אתונה',
+        size: '24 מ"ר'
+      },
+      // Add more projects here
+    ];
 
-    const fetchProjects = async () => {
-      try {
-        setLoading(true);
-        const response = await fetch('/api/projects');
-        
-        if (!response.ok) {
-          throw new Error(`HTTP error! status: ${response.status}`);
-        }
-        
-        const data = await response.json();
-        
-        if (!data || !Array.isArray(data.images)) {
-          throw new Error('Invalid data format received');
-        }
-
-        if (isMounted) {
-          const formattedProjects = data.images.map((image: string, index: number) => ({
-            id: (index + 1).toString().padStart(2, '0'),
-            title: getTitle(index),
-            description: getDescription(index),
-            image: `/images/Homes2/${image}`,
-            images: [
-              `/images/Homes2/${image}`,
-              `/images/Homes2/${image}`,
-              `/images/Homes2/${image}`,
-              `/images/Homes2/${image}`,
-            ],
-            beforeAfter: {
-              before: `/images/Homes2/${image}`,
-              after: `/images/Homes2/${image}`,
-            },
-            details: {
-              location: getLocation(index),
-              year: '2023',
-              size: getSize(index),
-              status: 'הושלם',
-            },
-            category: getCategory(index)
-          }));
-
-          setProjects(formattedProjects);
-        }
-      } catch (error) {
-        console.error('Error fetching projects:', error);
-        if (isMounted) {
-          setProjects([]);
-        }
-      } finally {
-        if (isMounted) {
-          setLoading(false);
-        }
-      }
-    };
-
-    fetchProjects();
-
-    return () => {
-      isMounted = false;
-    };
+    setProjects(mockProjects);
+    setLoading(false);
   }, [mounted]);
-
-  const getTitle = (index: number): string => {
-    const titles = [
-      'דירה עירונית מודרנית',
-      'וילה יוקרתית',
-      'דופלקס עכשווי',
-      'בית גן',
-      'נטהאוז',
-      'דירת גן',
-      'בית קוטג',
-      'דירת נופש',
-      'בית מינימליסטי',
-      'קונספט מגורים עתידני'
-    ];
-    return titles[index] || `פרויקט ${(index + 1).toString().padStart(2, '0')}`;
-  };
-
-  const getDescription = (index: number): string => {
-    const descriptions = [
-      'דירה עירונית עם עיצוב מודרני',
-      'וילה יוקרתית עם נוף פנורמי',
-      'דופלקס עכשווי עם חללים פתוחים',
-      'בית גן עם גינה פרטית',
-      'נטהאוז עם מרפסת גג',
-      'דירת גן עם גינה משותפת',
-      'בית קוטג כפרי',
-      'דירת נופש עם נוף לים',
-      'בית מינימליסטי עם קווים נקיים',
-      'קונספט מגורים חדשני'
-    ];
-    return descriptions[index] || 'פרויקט מגורים';
-  };
-
-  const getLocation = (index: number): string => {
-    const locations = [
-      'תל אביב',
-      'הרצליה',
-      'רמת גן',
-      'כפר סבא',
-      'רעננה',
-      'הוד השרון',
-      'רמת השרון',
-      'אילת',
-      'ירושלים',
-      'חיפה'
-    ];
-    return locations[index] || 'ישראל';
-  };
-
-  const getSize = (index: number): string => {
-    const sizes = [
-      '120 מ"ר',
-      '350 מ"ר',
-      '180 מ"ר',
-      '250 מ"ר',
-      '200 מ"ר',
-      '150 מ"ר',
-      '300 מ"ר',
-      '100 מ"ר',
-      '280 מ"ר',
-      '400 מ"ר'
-    ];
-    return sizes[index] || '200 מ"ר';
-  };
-
-  const getCategory = (index: number): Project['category'] => {
-    const categories: Project['category'][] = [
-      'apartments',
-      'private-homes',
-      'apartments',
-      'private-homes',
-      'apartments',
-      'apartments',
-      'private-homes',
-      'other-projects',
-      'private-homes',
-      'concepts'
-    ];
-    return categories[index] || 'other-projects';
-  };
 
   // Don't render anything until mounted
   if (!mounted) {
@@ -260,45 +143,41 @@ export default function ProjectsPage() {
             className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8"
           >
             {filteredProjects.map((project, index) => (
-              <motion.div
-                key={project.id}
-                initial={{ opacity: 0, y: 20 }}
-                animate={{ opacity: 1, y: 0 }}
-                transition={{ duration: 0.5, delay: index * 0.1 }}
-                className="group relative overflow-hidden cursor-pointer rounded-lg shadow-lg hover:shadow-xl transition-shadow duration-300"
-                onClick={() => setSelectedProject(project)}
-              >
-                <div className="relative h-[400px]">
-                  <Image
-                    src={project.image}
-                    alt={project.title}
-                    fill
-                    className="object-cover transition-transform duration-700 group-hover:scale-110"
-                  />
-                  <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/30 to-transparent" />
-                  <div className="absolute bottom-0 left-0 right-0 p-6 transform translate-y-full group-hover:translate-y-0 transition-transform duration-500">
-                    <div className="flex items-center gap-4 mb-4">
-                      <span className="text-yellow-400 text-2xl font-light">{project.id}</span>
-                      <div className="h-px w-16 bg-yellow-400" />
+              <Link href={`/projects/${project.id}`} key={project.id}>
+                <motion.div
+                  initial={{ opacity: 0, y: 20 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  transition={{ duration: 0.5, delay: index * 0.1 }}
+                  className="group relative overflow-hidden cursor-pointer rounded-lg shadow-lg hover:shadow-xl transition-shadow duration-300"
+                >
+                  <div className="relative h-[400px]">
+                    <Image
+                      src={project.image}
+                      alt={project.title}
+                      fill
+                      className="object-cover transition-transform duration-700 group-hover:scale-110"
+                    />
+                    <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/30 to-transparent" />
+                    <div className="absolute bottom-0 left-0 right-0 p-6 transform translate-y-full group-hover:translate-y-0 transition-transform duration-500">
+                      <div className="flex items-center gap-4 mb-4">
+                        <span className="text-yellow-400 text-2xl font-light">{project.id}</span>
+                        <div className="h-px w-16 bg-yellow-400" />
+                      </div>
+                      <h3 className="text-2xl font-light mb-2 text-white">{project.title}</h3>
+                      <p className="text-gray-200">{project.description}</p>
+                      <div className="mt-4 flex gap-4 text-sm text-gray-300">
+                        <span>{project.location}</span>
+                        <span>•</span>
+                        <span>{project.size}</span>
+                      </div>
                     </div>
-                    <h3 className="text-2xl font-light mb-2 text-white">{project.title}</h3>
-                    <p className="text-gray-200">{project.description}</p>
                   </div>
-                </div>
-              </motion.div>
+                </motion.div>
+              </Link>
             ))}
           </motion.div>
         </AnimatePresence>
       </div>
-
-      {/* Project Preview Modal */}
-      {selectedProject && (
-        <ProjectPreview
-          project={selectedProject}
-          isOpen={!!selectedProject}
-          onClose={() => setSelectedProject(null)}
-        />
-      )}
     </main>
   );
 } 

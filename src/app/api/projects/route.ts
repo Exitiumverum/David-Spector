@@ -1,32 +1,73 @@
 import { NextResponse } from 'next/server';
-import fs from 'fs';
-import path from 'path';
+import { prisma } from '@/lib/db';
 
+// GET /api/projects - Get all projects
 export async function GET() {
   try {
-    // Get the absolute path to the public/images/Homes2 directory
-    const imagesDir = path.join(process.cwd(), 'public', 'images', 'Homes2');
-    
-    // Read the directory
-    const files = fs.readdirSync(imagesDir);
-    
-    // Filter for image files (you can adjust the extensions as needed)
-    const imageFiles = files.filter(file => 
-      /\.(jpg|jpeg|png|gif|webp)$/i.test(file)
-    );
-    
-    // Sort the files numerically
-    const sortedImages = imageFiles.sort((a, b) => {
-      const numA = parseInt(a.replace(/\D/g, ''));
-      const numB = parseInt(b.replace(/\D/g, ''));
-      return numA - numB;
+    const projects = await prisma.project.findMany({
+      include: {
+        category: true,
+        images: {
+          orderBy: {
+            order: 'asc'
+          }
+        },
+        beforeAfter: true
+      }
     });
 
-    return NextResponse.json({ images: sortedImages });
+    return NextResponse.json(projects);
   } catch (error) {
-    console.error('Error reading images directory:', error);
+    console.error('Error fetching projects:', error);
     return NextResponse.json(
-      { error: 'Failed to read images directory' },
+      { error: 'Failed to fetch projects' },
+      { status: 500 }
+    );
+  }
+}
+
+// POST /api/projects - Create a new project
+export async function POST(request: Request) {
+  try {
+    const body = await request.json();
+    const { title, description, categoryId, mainImage, location, year, size, status, images, beforeAfter } = body;
+
+    const project = await prisma.project.create({
+      data: {
+        title,
+        description,
+        categoryId,
+        mainImage,
+        location,
+        year,
+        size,
+        status,
+        images: {
+          create: images?.map((image: { url: string; alt?: string; order?: number }) => ({
+            url: image.url,
+            alt: image.alt,
+            order: image.order || 0
+          }))
+        },
+        beforeAfter: beforeAfter ? {
+          create: {
+            before: beforeAfter.before,
+            after: beforeAfter.after
+          }
+        } : undefined
+      },
+      include: {
+        category: true,
+        images: true,
+        beforeAfter: true
+      }
+    });
+
+    return NextResponse.json(project);
+  } catch (error) {
+    console.error('Error creating project:', error);
+    return NextResponse.json(
+      { error: 'Failed to create project' },
       { status: 500 }
     );
   }

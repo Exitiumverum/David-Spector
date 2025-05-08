@@ -15,7 +15,7 @@ export default function Home() {
         <div className="absolute inset-0 z-0">
           <div className="absolute inset-0 bg-black/50" />
           <Image
-            src="/images/Homes2/9.png"
+            src="/images/Homes2/10.jpg"
             alt="רקע אדריכלי"
             fill
             className="object-cover"
@@ -41,17 +41,19 @@ export default function Home() {
       <section className="py-20 px-4 md:px-8 max-w-6xl mx-auto">
         <div className="grid md:grid-cols-2 gap-12 items-center">
           <div>
-            <h2 className="text-3xl font-light mb-6">אודות דוד ספקטור</h2>
+            <h2 className="text-3xl font-light mb-6">נעים להכיר!</h2>
             <p className="text-gray-600 mb-4">
-              עם ניסיון של מעל 15 שנים בתחום האדריכלות ועיצוב הפנים, דוד ספקטור מביא שילוב ייחודי של יצירתיות ומומחיות טכנית לכל פרויקט. עבודתו מתאפיינת בקווים נקיים, תכנון מרחבי מחושב והבנה עמוקה של האינטראקציה בין אנשים לסביבתם.
+אני מאמין שהמרחב שסביבנו משפיע על איך שאנחנו מרגישים, חושבים, ואפילו על מערכות היחסים שלנו. לפעמים קשה לשים את האצבע על מה הופך חלל ל"נעים" או "קודר" – אבל כולנו מרגישים את זה מיד.
+דרך עיצוב, תכנון והדמיה, אני עוזר לאנשים לראות את הפוטנציאל האמיתי של נכסים – בין אם הם גרים בהם, משכירים אותם או רוצים למכור.
+שינוי קטן יכול לעשות הבדל ענק – בדיוק בשביל זה אני כאן.
             </p>
-            <p className="text-gray-600">
+            {/* <p className="text-gray-600">
               דוד מתמחה בפרויקטים מגוונים הכוללים בתי מגורים, חללים מסחריים ופרויקטים של אירוח, כאשר כל פרויקט משקף את מחויבותו ליצירת חללים יפים ופונקציונליים.
-            </p>
+            </p> */}
           </div>
           <div className="relative h-[400px]">
             <Image
-              src="/about-image.jpg"
+              src="/images/Logos/DavidSpector.jpeg"
               alt="דוד ספקטור"
               fill
               className="object-cover"
