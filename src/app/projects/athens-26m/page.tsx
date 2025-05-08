@@ -31,7 +31,7 @@ export default function Athens26mPage() {
         <div className="absolute inset-0 bg-black/30" />
         <div className="absolute inset-0 flex items-center justify-center">
           <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.8 }} className="text-center text-white">
-            <h1 className="text-5xl md:text-7xl font-light mb-4">דירת 26 מ"ר באתונה</h1>
+            <h1 className="text-5xl md:text-7xl font-light mb-4">דירת 26 מ&quot;ר באתונה</h1>
             <p className="text-xl md:text-2xl">עיצוב דירה קומפקטית באתונה</p>
           </motion.div>
         </div>
