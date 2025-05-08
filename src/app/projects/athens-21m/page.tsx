@@ -10,8 +10,6 @@ import 'swiper/css/pagination';
 
 export default function Athens24mPage() {
   const bannerImage = '/images/projects/athens-21m/02.png';
-  const beforeImage = '/images/projects/athens-21m/BnA01.png';
-  const afterImage = '/images/projects/athens-21m/BnA02.png';
   const galleryImages = [
     '/images/projects/athens-21m/01.png',
     '/images/projects/athens-21m/02.png',
@@ -41,7 +39,7 @@ export default function Athens24mPage() {
             <h2 className="text-3xl font-light mb-6 text-black">הפרויקט</h2>
             <div className="space-y-4">
               <p className="text-black">
-                בפרויקט זה התבקשתי לתכנן דירת סטודיו פונקציונלית ונעימה בשטח של 21 מ"ר בלבד — אתגר תכנוני של ממש.
+                בפרויקט זה התבקשתי לתכנן דירת סטודיו פונקציונלית ונעימה בשטח של 21 מ&quot;ר בלבד — אתגר תכנוני של ממש.
               </p>
               <p className="text-black">
                 העברתי את חדר הרחצה למיקום המטבח המקורי, שברתי קירות כדי ליצור חלל פתוח, והפרדתי בין אזור השינה לסלון באמצעות ספרייה דו-צדדית שמכילה גם נישה לטלוויזיה – כך נשמרת תחושת הפרדה מבלי לחסום את קו הראייה לגינה.
@@ -63,7 +61,7 @@ export default function Athens24mPage() {
               </div>
               <div>
                 <p className="text-black">גודל</p>
-                <p className="font-medium text-black">21 מ"ר</p>
+                <p className="font-medium text-black">21 מ&quot;ר</p>
               </div>
             </div>
           </div>
