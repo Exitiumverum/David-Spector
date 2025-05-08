@@ -8,7 +8,6 @@ import { Navigation, Pagination, Autoplay } from 'swiper/modules';
 import 'swiper/css';
 import 'swiper/css/navigation';
 import 'swiper/css/pagination';
-import { useRouter } from 'next/navigation';
 
 export default function AthensApartmentPage() {
   const bannerImage = '/images/projects/athens/04.png';
@@ -90,7 +89,7 @@ export default function AthensApartmentPage() {
               </div>
               <div>
                 <p className="text-black">גודל</p>
-                <p className="font-medium text-black">38 מ"ר</p>
+                <p className="font-medium text-black">38 מ&quot;ר</p>
               </div>
             </div>
           </div>
