@@ -117,7 +117,6 @@ function BestProjectsSwiper() {
   ];
   return (
     <div className="max-w-5xl mx-auto px-4 py-12">
-      <h2 className="text-3xl font-light mb-8 text-center text-black">הפרויקטים הבולטים</h2>
       <Swiper
         modules={[Navigation, Pagination, Autoplay]}
         spaceBetween={30}

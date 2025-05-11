@@ -1,7 +1,7 @@
 'use client';
 
 import { Swiper, SwiperSlide } from 'swiper/react';
-import { Navigation, Pagination, Autoplay, EffectFade } from 'swiper/modules';
+import { Navigation, Pagination, Autoplay, EffectFade, Virtual } from 'swiper/modules';
 import Image from 'next/image';
 import { useEffect, useState } from 'react';
 
@@ -80,13 +80,22 @@ export default function ProjectsSwiper() {
       <div className="max-w-6xl mx-auto px-4">
         <h2 className="text-3xl font-light mb-12 text-center text-gray-900">פרויקטים נבחרים</h2>
         <Swiper
-          modules={[Navigation, Pagination, Autoplay, EffectFade]}
-          effect="fade"
+          modules={[Navigation, Pagination, Autoplay]}
           spaceBetween={0}
           slidesPerView={1}
+          loop={true}
+          allowSlideNext={true}
+          allowSlidePrev={true}
+          watchSlidesProgress={true}
+          preventInteractionOnTransition={false}
+          simulateTouch={true}
+          grabCursor={true}
           navigation={{
             nextEl: '.swiper-button-next',
             prevEl: '.swiper-button-prev',
+            disabledClass: 'swiper-button-disabled !opacity-100',
+            enabled: true,
+            hideOnClick: false
           }}
           pagination={{
             clickable: true,
@@ -129,8 +138,8 @@ export default function ProjectsSwiper() {
             </SwiperSlide>
           ))}
           <div className="swiper-pagination !bottom-8" />
-          <div className="swiper-button-next !text-yellow-600 after:!text-2xl" />
-          <div className="swiper-button-prev !text-yellow-600 after:!text-2xl" />
+          <div className="swiper-button-next !text-yellow-600 after:!text-2xl !pointer-events-auto" />
+          <div className="swiper-button-prev !text-yellow-600 after:!text-2xl !pointer-events-auto" />
         </Swiper>
       </div>
     </section>

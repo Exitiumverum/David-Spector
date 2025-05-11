@@ -43,7 +43,7 @@ export default function ProjectsPage() {
         id: 'athens-apartment',
         title: 'דירת 34 מ"ר באתונה',
         description: 'עיצוב מחדש לדירה באתונה',
-        image: '/images/projects/athens/01.png',
+        image: '/images/projects/athens/02.png',
         category: 'apartments',
         location: 'אתונה',
         size: '34 מ"ר'

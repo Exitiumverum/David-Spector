@@ -8,6 +8,7 @@ import { Navigation, Pagination, Autoplay } from 'swiper/modules';
 import 'swiper/css';
 import 'swiper/css/navigation';
 import 'swiper/css/pagination';
+import BeforeAfterToggle from '@/components/BeforeAfterToggle';
 
 export default function AthensApartmentPage() {
   const bannerImage = '/images/projects/athens/04.png';
@@ -89,7 +90,7 @@ export default function AthensApartmentPage() {
               </div>
               <div>
                 <p className="text-black">גודל</p>
-                <p className="font-medium text-black">38 מ&quot;ר</p>
+                <p className="font-medium text-black">34 מ&quot;ר</p>
               </div>
             </div>
           </div>
@@ -168,26 +169,26 @@ export default function AthensApartmentPage() {
   );
 }
 
-function BeforeAfterToggle({ beforeImg, afterImg, label }: { beforeImg: string; afterImg: string; label: string }) {
-  const [showAfter, setShowAfter] = useState(false);
-  return (
-    <div className="space-y-4 flex flex-col items-center">
-      <h3 className="text-xl font-light text-center mb-2 text-black">{label}</h3>
-      <div className="relative w-full max-w-2xl aspect-video rounded-lg overflow-hidden bg-gray-100">
-        <Image
-          src={showAfter ? afterImg : beforeImg}
-          alt={label}
-          fill
-          className="object-contain"
-          sizes="(max-width: 768px) 100vw, 800px"
-        />
-      </div>
-      <button
-        className="mt-2 px-4 py-2 bg-yellow-400 text-black rounded hover:bg-yellow-500 transition"
-        onClick={() => setShowAfter((prev) => !prev)}
-      >
-        {showAfter ? 'הצג לפני' : 'הצג אחרי'}
-      </button>
-    </div>
-  );
-} 
+// function BeforeAfterToggle({ beforeImg, afterImg, label }: { beforeImg: string; afterImg: string; label: string }) {
+//   const [showAfter, setShowAfter] = useState(false);
+//   return (
+//     <div className="space-y-4 flex flex-col items-center">
+//       <h3 className="text-xl font-light text-center mb-2 text-black">{label}</h3>
+//       <div className="relative w-full max-w-2xl aspect-video rounded-lg overflow-hidden bg-gray-100">
+//         <Image
+//           src={showAfter ? afterImg : beforeImg}
+//           alt={label}
+//           fill
+//           className="object-contain"
+//           sizes="(max-width: 768px) 100vw, 800px"
+//         />
+//       </div>
+//       <button
+//         className="mt-2 px-4 py-2 bg-yellow-400 text-black rounded hover:bg-yellow-500 transition"
+//         onClick={() => setShowAfter((prev) => !prev)}
+//       >
+//         {showAfter ? 'הצג לפני' : 'הצג אחרי'}
+//       </button>
+//     </div>
+//   );
+// } 

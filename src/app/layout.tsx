@@ -3,6 +3,7 @@ import { Inter } from "next/font/google";
 import { Dancing_Script } from "next/font/google";
 import "./globals.css";
 import Navigation from "@/components/Navigation";
+import ContactModalWrapper from "@/components/ContactModalWrapper";
 
 const inter = Inter({ subsets: ["latin"] });
 const dancingScript = Dancing_Script({ 
@@ -25,6 +26,7 @@ export default function RootLayout({
       <body className={`${inter.className} ${dancingScript.variable}`}>
         <Navigation />
         {children}
+        <ContactModalWrapper />
       </body>
     </html>
   );
