@@ -125,7 +125,25 @@ export default function ProjectsPage() {
         category: 'apartments',
         location: 'אתונה',
         size: '26 מ"ר'
-      }
+      },
+      {
+        id: 'ashdod-studio',
+        title: 'פרויקט קונספט באשדוד',
+        description: 'פרויקט מגורים באשדוד רובע א',
+        image: '/images/projects/ashdod-studio/01.png',
+        category: 'concepts',
+        location: 'אשדוד',
+        size: 'שכונת מגורים'
+      },
+      {
+        id: 'drawings-gallery',
+        title: 'גלריית איורים אמנותיים',
+        description: 'אוסף איורים אישיים וסקיצות אמנותיות',
+        image: '/images/projects/drawings-gallery/01.jpg',
+        category: 'concepts',
+        location: '',
+        size: ''
+      },
       // Add more projects here
     ];
 
