@@ -3,7 +3,6 @@ import Image from 'next/image';
 import { motion } from 'framer-motion';
 import { Swiper, SwiperSlide } from 'swiper/react';
 import { Navigation, Pagination, Autoplay } from 'swiper/modules';
-import BeforeAfterToggle from '@/components/BeforeAfterToggle';
 import 'swiper/css';
 import 'swiper/css/navigation';
 import 'swiper/css/pagination';
