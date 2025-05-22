@@ -46,7 +46,7 @@ export default function AshdodStudioPage() {
             <h2 className="text-3xl font-light mb-6 text-black">הקונספט</h2>
             <div className="space-y-4">
               <p className="text-black">
-                במהלך לימודיי לתואר ראשון באדריכלות התנסיתי בתכנון קונספטואלי לשכונת מגורים ברובע א' באשדוד.
+                במהלך לימודיי לתואר ראשון באדריכלות התנסיתי בתכנון קונספטואלי לשכונת מגורים ברובע א&apos; באשדוד.
               </p>
               <p className="text-black">
                 בפרויקט זה בחרתי להציע חזון עירוני בו המרחב הציבורי עובר מהקרקע אל קומות הגג – מקום מפגש, תנועה ושהייה.
@@ -61,7 +61,7 @@ export default function AshdodStudioPage() {
             <div className="grid grid-cols-2 gap-4">
               <div>
                 <p className="text-black">מיקום</p>
-                <p className="font-medium text-black">רובע א', אשדוד</p>
+                <p className="font-medium text-black">רובע א&apos;, אשדוד</p>
               </div>
               <div>
                 <p className="text-black">סטטוס</p>

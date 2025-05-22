@@ -75,7 +75,7 @@ export default function DrawingsGalleryPage() {
         </div>
         <hr className="my-12 border-t-4 border-yellow-400 rounded-full" />
         <div className="mb-20">
-          <h2 className="text-3xl font-light mb-12 text-center text-black">גלריית רישומים</h2>
+          <h2 className="text-3xl font-light mb-12 text-center text-black">גלריית איורים</h2>
           <Swiper 
             modules={[Navigation, Pagination, Autoplay]} 
             spaceBetween={30} 
