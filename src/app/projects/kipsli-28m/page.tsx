@@ -9,7 +9,7 @@ import 'swiper/css/navigation';
 import 'swiper/css/pagination';
 
 export default function Athens26mPage() {
-  const bannerImage = '/images/projects/kipsli-28m/05.jpeg';
+  const bannerImage = '/images/projects/kipsli-28m/01.jpeg';
   const galleryImages = [
     '/images/projects/kipsli-28m/01.jpeg',
     '/images/projects/kipsli-28m/02.jpeg',

@@ -89,7 +89,7 @@ export default function Athens24mPage() {
             {galleryImages.map((image, index) => (
               <SwiperSlide key={index}>
                 <div className="relative h-full w-full">
-                  <Image src={image} alt={`Athens 21m House ${index + 1}`} fill className="object-cover rounded-lg" />
+                  <Image src={image} alt={`Athens 21m House ${index + 1}`} fill className="object-contain rounded-lg" />
                 </div>
               </SwiperSlide>
             ))}

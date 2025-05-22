@@ -95,7 +95,7 @@ export default function AthensPenthousePage() {
             {galleryImages.map((image, index) => (
               <SwiperSlide key={index}>
                 <div className="relative h-full w-full">
-                  <Image src={image} alt={`Athens Penthouse ${index + 1}`} fill className="object-cover rounded-lg" />
+                  <Image src={image} alt={`Athens Penthouse ${index + 1}`} fill className="object-contain rounded-lg" />
                 </div>
               </SwiperSlide>
             ))}
