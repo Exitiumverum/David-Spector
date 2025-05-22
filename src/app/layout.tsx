@@ -14,6 +14,9 @@ const dancingScript = Dancing_Script({
 export const metadata: Metadata = {
   title: "דוד ספקטור - אדריכלות ועיצוב פנים",
   description: "דוד ספקטור - אדריכל ועיצוב פנים מקצועי עם ניסיון של מעל 5 שנים",
+  icons: {
+    icon: "/images/logo 06.svg",
+  },
 };
 
 export default function RootLayout({
@@ -23,6 +26,9 @@ export default function RootLayout({
 }) {
   return (
     <html lang="he" dir="rtl">
+      <head>
+        <link rel="icon" href="/images/logo 06.svg" type="image/svg+xml" />
+      </head>
       <body className={`${inter.className} ${dancingScript.variable}`}>
         <Navigation />
         {children}

@@ -5,6 +5,48 @@ import Image from 'next/image';
 import { motion, AnimatePresence } from 'framer-motion';
 import Link from 'next/link';
 
+const ComingSoon = () => (
+  <motion.div
+    initial={{ opacity: 0, y: 20 }}
+    animate={{ opacity: 1, y: 0 }}
+    transition={{ duration: 0.8 }}
+    className="col-span-full flex flex-col items-center justify-center py-20 px-4 text-center"
+  >
+    <motion.div
+      animate={{ 
+        scale: [1, 1.05, 1],
+        rotate: [0, 2, -2, 0]
+      }}
+      transition={{ 
+        duration: 4,
+        repeat: Infinity,
+        repeatType: "reverse"
+      }}
+      className="mb-8"
+    >
+      <svg className="w-24 h-24 text-yellow-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" />
+      </svg>
+    </motion.div>
+    <h2 className="text-3xl md:text-4xl font-light text-gray-800 mb-4">בקרוב</h2>
+    <p className="text-gray-600 max-w-md">
+      אני עובד על פרויקטים חדשים ומרגשים. בקרוב אוסיף פרויקטים חדשים לקטגוריה זו.
+    </p>
+    <motion.div
+      animate={{ 
+        opacity: [0.5, 1, 0.5],
+      }}
+      transition={{ 
+        duration: 2,
+        repeat: Infinity,
+      }}
+      className="mt-8 text-yellow-500 text-sm"
+    >
+      בואו לבדוק שוב בקרוב
+    </motion.div>
+  </motion.div>
+);
+
 interface Project {
   id: string;
   title: string;
@@ -56,6 +98,15 @@ export default function ProjectsPage() {
         category: 'apartments',
         location: 'אתונה',
         size: '38 מ"ר'
+      },
+      {
+        id: 'kipsli-28m',
+        title: 'דירת 28 מ"ר בקיפסלי',
+        description: 'עיצוב דירה קומפקטית בקיפסלי',
+        image: '/images/projects/kipsli-28m/03.jpeg',
+        category: 'apartments',
+        location: 'קיפסלי',
+        size: '28 מ"ר'
       },
       {
           id: 'athens-21m',
@@ -151,39 +202,43 @@ export default function ProjectsPage() {
             transition={{ duration: 0.3 }}
             className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8"
           >
-            {filteredProjects.map((project, index) => (
-              <Link href={`/projects/${project.id}`} key={project.id}>
-                <motion.div
-                  initial={{ opacity: 0, y: 20 }}
-                  animate={{ opacity: 1, y: 0 }}
-                  transition={{ duration: 0.5, delay: index * 0.1 }}
-                  className="group relative overflow-hidden cursor-pointer rounded-lg shadow-lg hover:shadow-xl transition-shadow duration-300"
-                >
-                  <div className="relative h-[400px]">
-                    <Image
-                      src={project.image}
-                      alt={project.title}
-                      fill
-                      className="object-cover transition-transform duration-700 group-hover:scale-110"
-                    />
-                    <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/30 to-transparent" />
-                    <div className="absolute bottom-0 left-0 right-0 p-6 transform translate-y-full group-hover:translate-y-0 transition-transform duration-500">
-                      <div className="flex items-center gap-4 mb-4">
-                        <span className="text-yellow-400 text-2xl font-light">{project.title}</span>
-                        <div className="h-px w-16 bg-yellow-400" />
-                      </div>
-                      {/* <h3 className="text-2xl font-light mb-2 text-white">{project.title}</h3> */}
-                      <p className="text-gray-200">{project.description}</p>
-                      <div className="mt-4 flex gap-4 text-sm text-gray-300">
-                        <span>{project.location}</span>
-                        <span>•</span>
-                        <span>{project.size}</span>
+            {filteredProjects.length > 0 ? (
+              filteredProjects.map((project, index) => (
+                <Link href={`/projects/${project.id}`} key={project.id}>
+                  <motion.div
+                    initial={{ opacity: 0, y: 20 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    transition={{ duration: 0.5, delay: index * 0.1 }}
+                    className="group relative overflow-hidden cursor-pointer rounded-lg shadow-lg hover:shadow-xl transition-shadow duration-300"
+                  >
+                    <div className="relative h-[400px]">
+                      <Image
+                        src={project.image}
+                        alt={project.title}
+                        fill
+                        className="object-cover transition-transform duration-700 group-hover:scale-110"
+                      />
+                      <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/30 to-transparent" />
+                      <div className="absolute bottom-0 left-0 right-0 p-6 transform translate-y-full group-hover:translate-y-0 transition-transform duration-500">
+                        <div className="flex items-center gap-4 mb-4">
+                          <span className="text-yellow-400 text-2xl font-light">{project.title}</span>
+                          <div className="h-px w-16 bg-yellow-400" />
+                        </div>
+                        {/* <h3 className="text-2xl font-light mb-2 text-white">{project.title}</h3> */}
+                        <p className="text-gray-200">{project.description}</p>
+                        <div className="mt-4 flex gap-4 text-sm text-gray-300">
+                          <span>{project.location}</span>
+                          <span>•</span>
+                          <span>{project.size}</span>
+                        </div>
                       </div>
                     </div>
-                  </div>
-                </motion.div>
-              </Link>
-            ))}
+                  </motion.div>
+                </Link>
+              ))
+            ) : (
+              <ComingSoon />
+            )}
           </motion.div>
         </AnimatePresence>
       </div>
