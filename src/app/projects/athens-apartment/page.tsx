@@ -20,12 +20,11 @@ export default function AthensApartmentPage() {
     '/images/projects/athens/04.png',
     '/images/projects/athens/05.png',
     '/images/projects/athens/06.png',
-    '/images/projects/athens/07.png',
+    '/images/projects/athens/07.png',   
     '/images/projects/athens/08.png',
-    // '/images/projects/athens/09.png',
-    // '/images/projects/athens/10.png',
-    // '/images/projects/athens/11.png',
-    // '/images/projects/athens/12.png',
+    '/images/projects/athens/09.jpg',
+    '/images/projects/athens/10.jpg',
+    '/images/projects/athens/11.png',
   ];
 
   return (

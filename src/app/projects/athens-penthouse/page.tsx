@@ -19,6 +19,10 @@ export default function AthensPenthousePage() {
     '/images/projects/athens-penthouse/06.png',
     '/images/projects/athens-penthouse/07.png',
     '/images/projects/athens-penthouse/08.png',
+    '/images/projects/athens-penthouse/09.jpg',
+    '/images/projects/athens-penthouse/10.png',
+    '/images/projects/athens-penthouse/11.png',
+
   ];
 
   return (

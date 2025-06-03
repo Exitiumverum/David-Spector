@@ -17,6 +17,9 @@ export default function Athens26mPage() {
     '/images/projects/kipsli-28m/04.jpeg',
     '/images/projects/kipsli-28m/05.jpeg',
     '/images/projects/kipsli-28m/06.jpeg',
+    '/images/projects/kipsli-28m/07.jpeg',
+    '/images/projects/kipsli-28m/08.jpeg',
+    '/images/projects/kipsli-28m/09.jpg',
   ];
 
   return (

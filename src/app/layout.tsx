@@ -15,7 +15,7 @@ export const metadata: Metadata = {
   title: "דוד ספקטור - אדריכלות ועיצוב פנים",
   description: "דוד ספקטור - אדריכל ועיצוב פנים מקצועי עם ניסיון של מעל 5 שנים",
   icons: {
-    icon: "/images/logo 06.svg",
+    icon: "/images/Logos/logoPng.png",
   },
 };
 
@@ -27,7 +27,7 @@ export default function RootLayout({
   return (
     <html lang="he" dir="rtl">
       <head>
-        <link rel="icon" href="/images/logo 06.svg" type="image/svg+xml" />
+        <link rel="icon" href="/images/Logos/logoPng.png" type="image/png" />
       </head>
       <body className={`${inter.className} ${dancingScript.variable}`}>
         <Navigation />

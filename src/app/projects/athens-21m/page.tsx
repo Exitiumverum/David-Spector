@@ -19,6 +19,9 @@ export default function Athens24mPage() {
     '/images/projects/athens-21m/06.png',
     '/images/projects/athens-21m/07.png',
     '/images/projects/athens-21m/08.png',
+    '/images/projects/athens-21m/09.png',
+    '/images/projects/athens-21m/10.jpg',
+
   ];
 
   return (

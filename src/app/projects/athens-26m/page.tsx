@@ -22,6 +22,8 @@ export default function Athens26mPage() {
     '/images/projects/athens-26m/09.png',
     '/images/projects/athens-26m/10.png',
     '/images/projects/athens-26m/11.png',
+    '/images/projects/athens-26m/12.png',
+
   ];
 
   return (
