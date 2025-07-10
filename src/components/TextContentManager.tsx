@@ -13,7 +13,7 @@ const ABOUT_SECTIONS: ContentSection[] = [
   {
     key: 'about_title',
     label: 'כותרת ראשית',
-    description: 'הכותרת הראשית של דף "אודות"'
+    description: 'הכותרת הראשית של דף &quot;אודות&quot;'
   },
   {
     key: 'about_intro',
