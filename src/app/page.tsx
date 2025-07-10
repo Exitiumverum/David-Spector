@@ -8,9 +8,84 @@ import { Navigation, Pagination, Autoplay } from 'swiper/modules';
 import 'swiper/css';
 import 'swiper/css/navigation';
 import 'swiper/css/pagination';
+import { useEffect, useState } from 'react';
+import { projectService, siteContentService, Project, SiteContent } from '@/lib/supabase';
+
+// Component that tries multiple image extensions
+const ProjectImage = ({ projectSlug, projectTitle }: { projectSlug: string; projectTitle: string }) => {
+  const [imageError, setImageError] = useState(false);
+  const [currentExtensionIndex, setCurrentExtensionIndex] = useState(0);
+  
+  const extensions = ['01.jpg', '01.jpeg', '01.png', '01.JPG', '01.JPEG', '01.PNG'];
+  
+  const handleImageError = () => {
+    if (currentExtensionIndex < extensions.length - 1) {
+      setCurrentExtensionIndex(currentExtensionIndex + 1);
+    } else {
+      setImageError(true);
+    }
+  };
+  
+  if (imageError) {
+    return (
+      <div className="w-full h-full bg-gray-200 flex items-center justify-center">
+        <span className="text-gray-500 text-sm">תמונה לא זמינה</span>
+      </div>
+    );
+  }
+  
+  const currentExtension = extensions[currentExtensionIndex];
+  const imagePath = `/images/projects/${projectSlug}/${currentExtension}`;
+  
+  return (
+    <Image
+      src={imagePath}
+      alt={projectTitle}
+      fill
+      className="object-cover"
+      sizes="(max-width: 768px) 100vw, 800px"
+      onError={handleImageError}
+    />
+  );
+};
 
 export default function Home() {
   const router = useRouter();
+  const [featuredProjects, setFeaturedProjects] = useState<Project[]>([]);
+  const [siteContent, setSiteContent] = useState<Record<string, string>>({});
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    const fetchData = async () => {
+      try {
+        // Fetch featured projects
+        const projects = await projectService.getFeaturedProjects();
+        setFeaturedProjects(projects);
+
+        // Fetch site content
+        const content = await siteContentService.getSiteContentBySection('home');
+        const contentMap: Record<string, string> = {};
+        content.forEach(item => {
+          contentMap[item.key] = item.hebrew;
+        });
+        setSiteContent(contentMap);
+      } catch (error) {
+        console.error('Error fetching data:', error);
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    fetchData();
+  }, []);
+
+  if (loading) {
+    return (
+      <div className="min-h-screen bg-white flex items-center justify-center">
+        <div className="animate-pulse text-yellow-600 text-xl">טוען...</div>
+      </div>
+    );
+  }
 
   return (
     <main className="min-h-screen bg-white text-gray-900">
@@ -27,8 +102,12 @@ export default function Home() {
           />
         </div>
         <div className="relative z-10 text-center text-white px-4">
-          <h1 className="text-5xl md:text-7xl font-light mb-4">דוד ספקטור</h1>
-          <p className="text-xl md:text-2xl font-light mb-8">אדריכלות ועיצוב פנים</p>
+          <h1 className="text-5xl md:text-7xl font-light mb-4">
+            {siteContent.home_hero_title || 'דוד ספקטור'}
+          </h1>
+          <p className="text-xl md:text-2xl font-light mb-8">
+            {siteContent.home_hero_subtitle || 'אדריכלות ועיצוב פנים'}
+          </p>
           <button 
             onClick={() => router.push('/projects')} 
             className="cursor-pointer border border-white px-8 py-3 hover:bg-white hover:text-black transition-colors duration-300"
@@ -39,28 +118,18 @@ export default function Home() {
       </section>
 
       {/* Projects Swiper Section */}
-      <BestProjectsSwiper />
+      <BestProjectsSwiper projects={featuredProjects} />
 
       {/* About Section */}
       <section className="py-20 px-4 md:px-8 max-w-6xl mx-auto">
         <div className="grid md:grid-cols-2 gap-12 items-center">
           <div>
-            <h2 className="text-3xl font-light mb-6">נעים להכיר!</h2>
+            <h2 className="text-3xl font-light mb-6">
+              {siteContent.home_about_title || 'נעים להכיר!'}
+            </h2>
             <div className="space-y-4">
               <p className="text-gray-600">
-                אני מאמין שהמרחב שסביבנו משפיע על איך שאנחנו מרגישים, חושבים, ואפילו על מערכות היחסים שלנו. לפעמים קשה לשים את האצבע על מה הופך חלל ל&quot;נעים&quot; או &quot;קודר&quot; – אבל כולנו מרגישים את זה מיד.
-              </p>
-              <p className="text-gray-600">
-                דרך עיצוב, תכנון והדמיה, אני עוזר לאנשים לראות את הפוטנציאל האמיתי של נכסים – בין אם הם גרים בהם, משכירים אותם או רוצים לקנות נכס.
-              </p>
-              <p className="text-gray-600">
-                שינוי קטן יכול לעשות הבדל ענק – בדיוק בשביל זה אני כאן.
-              </p>
-              <p className="text-gray-600">
-                צברתי ניסיון עשיר בתכנון, עיצוב וניהול פרויקטים – מדירות ובתים פרטיים ועד שכונות של מאות יחידות דיור במשרד פיבקו אדריכלים ועוד. כיום אני משלב את תחומי ההתמחות שלי – אדריכלות, עיצוב פנים ותיווך נדל&quot;ן ברימקס אושן תל אביב – כדי להעניק לכם פתרון שלם, מקצועי ומדויק.
-              </p>
-              <p className="text-gray-600">
-                בזכות ההבנה הרחבה שלי במרחב, בערך שעיצוב טוב נותן ובשוק הנדל&quot;ן, אני רואה את הנכס שלכם לא רק כמו שהוא – אלא כמו שהוא יכול להיות.
+                {siteContent.home_about_content || 'אני מאמין שהמרחב שסביבנו משפיע על איך שאנחנו מרגישים, חושבים, ואפילו על מערכות היחסים שלנו. לפעמים קשה לשים את האצבע על מה הופך חלל ל"נעים" או "קודר" – אבל כולנו מרגישים את זה מיד.'}
               </p>
             </div>
           </div>
@@ -75,12 +144,13 @@ export default function Home() {
         </div>
       </section>
 
-
       {/* Contact Section */}
       <ContactModal />
       <section className="py-20 px-4 md:px-8 max-w-6xl mx-auto">
         <div className="text-center">
-          <h2 className="text-3xl font-light mb-8">בואו ניצור משהו יוצא דופן</h2>
+          <h2 className="text-3xl font-light mb-8">
+            {siteContent.home_contact_title || 'בואו ניצור משהו יוצא דופן'}
+          </h2>
           <button 
             onClick={() => router.push('/contact')} 
             className="bg-amber-500 text-white px-8 py-3 hover:bg-amber-700 transition-colors duration-300 cursor-pointer"
@@ -105,27 +175,19 @@ export default function Home() {
   );
 }
 
-function BestProjectsSwiper() {
+function BestProjectsSwiper({ projects }: { projects: Project[] }) {
   const router = useRouter();
-  const projects = [
-    {
-      href: '/projects/athens-penthouse',
-      img: '/images/projects/athens-penthouse/01.jpg',
-      title: 'פנטהאוס באתונה',
-    },
-    {
-      href: '/projects/athens-26m',
-      img: '/images/projects/athens-26m/01.png',
-      title: 'דירת 26 מ"ר באתונה',
-    },
-    {
-      href: '/projects/athens-21m',
-      img: '/images/projects/athens-21m/01.png',
-      title: 'דירת 21 מ"ר באתונה',
-    },
-  ];
+
+  if (!projects || projects.length === 0) {
+    return null;
+  }
+
   return (
     <div className="max-w-5xl mx-auto px-4 py-12">
+      <div className="text-center mb-8">
+        <h2 className="text-3xl font-light mb-4 text-gray-800">פרויקטים מובילים</h2>
+        <p className="text-gray-600">הפרויקטים המובילים שלנו</p>
+      </div>
       <Swiper
         modules={[Navigation, Pagination, Autoplay]}
         spaceBetween={30}
@@ -135,23 +197,17 @@ function BestProjectsSwiper() {
         autoplay={{ delay: 5000, disableOnInteraction: false }}
         className="h-80 md:h-[350px] lg:h-[400px]"
       >
-        {projects.map((project, idx) => (
-          <SwiperSlide key={idx}>
+        {projects.map((project) => (
+          <SwiperSlide key={project.id}>
             <div
               className="relative h-full w-full rounded-lg overflow-hidden shadow-lg cursor-pointer"
-              onClick={() => router.push(project.href)}
+              onClick={() => router.push(`/projects/${project.slug}`)}
               tabIndex={0}
               role="button"
               aria-label={project.title}
-              onKeyDown={e => { if (e.key === 'Enter') router.push(project.href); }}
+              onKeyDown={e => { if (e.key === 'Enter') router.push(`/projects/${project.slug}`); }}
             >
-              <Image
-                src={project.img}
-                alt={project.title}
-                fill
-                className="object-cover"
-                sizes="(max-width: 768px) 100vw, 800px"
-              />
+              <ProjectImage projectSlug={project.slug} projectTitle={project.title} />
               <div className="absolute bottom-0 left-0 right-0 bg-black/60 p-4">
                 <h3 className="text-2xl text-white font-bold">{project.title}</h3>
               </div>

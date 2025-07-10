@@ -1,9 +1,7 @@
 import type { Metadata } from "next";
 import { Inter } from "next/font/google";
 import { Dancing_Script } from "next/font/google";
-import "./globals.css";
-import ConditionalNavigation from "@/components/ConditionalNavigation";
-import ConditionalContactModal from "@/components/ConditionalContactModal";
+import "../globals.css";
 
 const inter = Inter({ subsets: ["latin"] });
 const dancingScript = Dancing_Script({ 
@@ -12,14 +10,14 @@ const dancingScript = Dancing_Script({
 });
 
 export const metadata: Metadata = {
-  title: "דוד ספקטור - אדריכלות ועיצוב פנים",
-  description: "דוד ספקטור - אדריכל ועיצוב פנים מקצועי עם ניסיון של מעל 5 שנים",
+  title: "ניהול תוכן - דוד ספקטור",
+  description: "ניהול תוכן האתר",
   icons: {
     icon: "/images/Logos/logoPng.png",
   },
 };
 
-export default function RootLayout({
+export default function ManagementLayout({
   children,
 }: {
   children: React.ReactNode
@@ -30,10 +28,8 @@ export default function RootLayout({
         <link rel="icon" href="/images/Logos/logoPng.png" type="image/png" />
       </head>
       <body className={`${inter.className} ${dancingScript.variable}`}>
-        <ConditionalNavigation />
         {children}
-        <ConditionalContactModal />
       </body>
     </html>
   );
-}
+} 
