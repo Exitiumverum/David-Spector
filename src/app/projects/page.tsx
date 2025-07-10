@@ -4,6 +4,45 @@ import { useState, useEffect } from 'react';
 import Image from 'next/image';
 import { motion, AnimatePresence } from 'framer-motion';
 import Link from 'next/link';
+import { projectService, siteContentService, Project, SiteContent } from '@/lib/supabase';
+
+// Component that tries multiple image extensions
+const ProjectImage = ({ projectSlug, projectTitle }: { projectSlug: string; projectTitle: string }) => {
+  const [imageError, setImageError] = useState(false);
+  const [currentExtensionIndex, setCurrentExtensionIndex] = useState(0);
+  
+  const extensions = ['01.jpg', '01.jpeg', '01.png', '01.JPG', '01.JPEG', '01.PNG'];
+  
+  const handleImageError = () => {
+    if (currentExtensionIndex < extensions.length - 1) {
+      setCurrentExtensionIndex(currentExtensionIndex + 1);
+    } else {
+      setImageError(true);
+    }
+  };
+  
+  if (imageError) {
+    return (
+      <div className="w-full h-full bg-gray-200 flex items-center justify-center">
+        <span className="text-gray-500 text-sm">תמונה לא זמינה</span>
+      </div>
+    );
+  }
+  
+  const currentExtension = extensions[currentExtensionIndex];
+  const imagePath = `/images/projects/${projectSlug}/${currentExtension}`;
+  
+  return (
+    <Image
+      src={imagePath}
+      alt={projectTitle}
+      fill
+      className="object-cover group-hover:scale-105 transition-transform duration-300"
+      sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
+      onError={handleImageError}
+    />
+  );
+};
 
 const ComingSoon = () => (
   <motion.div
@@ -47,24 +86,16 @@ const ComingSoon = () => (
   </motion.div>
 );
 
-interface Project {
-  id: string;
-  title: string;
-  description: string;
-  image: string;
-  category: 'apartments' | 'private-homes' | 'other-projects' | 'concepts';
-  location: string;
-  size: string;
-}
-
 export default function ProjectsPage() {
   const [mounted, setMounted] = useState(false);
   const [projects, setProjects] = useState<Project[]>([]);
+  const [siteContent, setSiteContent] = useState<Record<string, string>>({});
   const [loading, setLoading] = useState(true);
   const [activeCategory, setActiveCategory] = useState<string>('all');
 
   const categories = [
     { id: 'all', label: 'הכל' },
+    { id: 'featured', label: 'פרויקטים מובחרים' },
     { id: 'apartments', label: 'דירות' },
     { id: 'private-homes', label: 'בתים פרטיים' },
     { id: 'other-projects', label: 'פרויקטים נוספים' },
@@ -79,76 +110,27 @@ export default function ProjectsPage() {
   useEffect(() => {
     if (!mounted) return;
 
-    // Mock data for now - replace with actual API call later
-    const mockProjects: Project[] = [
-      {
-        id: 'athens-apartment',
-        title: 'דירת 34 מ"ר באתונה',
-        description: 'עיצוב מחדש לדירה באתונה',
-        image: '/images/projects/athens/02.png',
-        category: 'apartments',
-        location: 'אתונה',
-        size: '34 מ"ר'
-      },
-      {
-        id: 'athens-penthouse',
-        title: 'פנטהאוס באתונה',
-        description: 'עיצוב פנטהאוס יוקרתי באתונה',
-        image: '/images/projects/athens-penthouse/01.jpg',
-        category: 'apartments',
-        location: 'אתונה',
-        size: '38 מ"ר'
-      },
-      {
-        id: 'kipsli-28m',
-        title: 'דירת 28 מ"ר בקיפסלי',
-        description: 'עיצוב דירה קומפקטית בקיפסלי',
-        image: '/images/projects/kipsli-28m/03.jpeg',
-        category: 'apartments',
-        location: 'קיפסלי',
-        size: '28 מ"ר'
-      },
-      {
-          id: 'athens-21m',
-          title: 'דירת 21 מ"ר באתונה',
-          description: 'עיצוב דירה קומפקטית באתונה',
-          image: '/images/projects/athens-21m/01.png',
-          category: 'apartments',
-          location: 'אתונה',
-          size: '21 מ"ר'
-        },
-      {
-        id: 'athens-26m',
-        title: 'דירת 26 מ"ר באתונה',
-        description: 'עיצוב דירה קומפקטית באתונה',
-        image: '/images/projects/athens-26m/01.png',
-        category: 'apartments',
-        location: 'אתונה',
-        size: '26 מ"ר'
-      },
-      {
-        id: 'ashdod-studio',
-        title: 'פרויקט קונספט באשדוד',
-        description: 'פרויקט מגורים באשדוד רובע א',
-        image: '/images/projects/ashdod-studio/01.png',
-        category: 'concepts',
-        location: 'אשדוד',
-        size: 'שכונת מגורים'
-      },
-      {
-        id: 'drawings-gallery',
-        title: 'גלריית איורים אמנותיים',
-        description: 'אוסף איורים אישיים וסקיצות אמנותיות',
-        image: '/images/projects/drawings-gallery/01.jpg',
-        category: 'concepts',
-        location: '',
-        size: ''
-      },
-      // Add more projects here
-    ];
+    const fetchData = async () => {
+      try {
+        // Fetch all projects
+        const allProjects = await projectService.getAllProjects();
+        setProjects(allProjects);
 
-    setProjects(mockProjects);
-    setLoading(false);
+        // Fetch site content
+        const content = await siteContentService.getSiteContentBySection('projects');
+        const contentMap: Record<string, string> = {};
+        content.forEach(item => {
+          contentMap[item.key] = item.hebrew;
+        });
+        setSiteContent(contentMap);
+      } catch (error) {
+        console.error('Error fetching projects:', error);
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    fetchData();
   }, [mounted]);
 
   // Don't render anything until mounted
@@ -176,8 +158,10 @@ export default function ProjectsPage() {
   }
 
   const filteredProjects = activeCategory === 'all' 
-    ? projects 
-    : projects.filter(project => project.category === activeCategory);
+    ? projects // Show all projects, featured first (already sorted by database)
+    : activeCategory === 'featured'
+    ? projects.filter(project => project.featured) // Show only featured projects
+    : projects.filter(project => project.category === activeCategory); // Show projects by category
 
   return (
     <main className="min-h-screen bg-white text-gray-900">
@@ -188,9 +172,11 @@ export default function ProjectsPage() {
           transition={{ duration: 0.8 }}
           className="text-center mb-16"
         >
-          <h1 className="text-4xl md:text-5xl font-light mb-4">פרויקטים</h1>
+          <h1 className="text-4xl md:text-5xl font-light mb-4">
+            {siteContent.projects_page_title || 'פרויקטים'}
+          </h1>
           <p className="text-gray-600 max-w-2xl mx-auto mb-12">
-            גלריית הפרויקטים שלנו מציגה את העבודה שלנו בתחום האדריכלות ועיצוב הפנים
+            {siteContent.projects_page_description || 'גלריית הפרויקטים שלנו מציגה את העבודה שלנו בתחום האדריכלות ועיצוב הפנים'}
           </p>
 
           {/* Category Filter */}
@@ -199,9 +185,9 @@ export default function ProjectsPage() {
               <button
                 key={category.id}
                 onClick={() => setActiveCategory(category.id)}
-                className={`px-6 py-2 rounded-full transition-all duration-300 transform hover:scale-105 ${
+                className={`px-6 py-2 rounded-full transition-colors duration-300 ${
                   activeCategory === category.id
-                    ? 'bg-yellow-600 text-white shadow-lg'
+                    ? 'bg-amber-500 text-white'
                     : 'bg-gray-100 text-gray-700 hover:bg-gray-200'
                 }`}
               >
@@ -211,51 +197,53 @@ export default function ProjectsPage() {
           </div>
         </motion.div>
 
+        {/* Projects Grid */}
         <AnimatePresence mode="wait">
           <motion.div
             key={activeCategory}
-            initial={{ opacity: 0 }}
-            animate={{ opacity: 1 }}
-            exit={{ opacity: 0 }}
-            transition={{ duration: 0.3 }}
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            exit={{ opacity: 0, y: -20 }}
+            transition={{ duration: 0.5 }}
             className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8"
           >
-            {filteredProjects.length > 0 ? (
-              filteredProjects.map((project, index) => (
-                <Link href={`/projects/${project.id}`} key={project.id}>
-                  <motion.div
-                    initial={{ opacity: 0, y: 20 }}
-                    animate={{ opacity: 1, y: 0 }}
-                    transition={{ duration: 0.5, delay: index * 0.1 }}
-                    className="group relative overflow-hidden cursor-pointer rounded-lg shadow-lg hover:shadow-xl transition-shadow duration-300"
-                  >
-                    <div className="relative h-[400px]">
-                      <Image
-                        src={project.image}
-                        alt={project.title}
-                        fill
-                        className="object-cover transition-transform duration-700 group-hover:scale-110"
-                      />
-                      <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/30 to-transparent" />
-                      <div className="absolute bottom-0 left-0 right-0 p-6 transform translate-y-full group-hover:translate-y-0 transition-transform duration-500">
-                        <div className="flex items-center gap-4 mb-4">
-                          <span className="text-yellow-400 text-2xl font-light">{project.title}</span>
-                          <div className="h-px w-16 bg-yellow-400" />
-                        </div>
-                        {/* <h3 className="text-2xl font-light mb-2 text-white">{project.title}</h3> */}
-                        <p className="text-gray-200">{project.description}</p>
-                        <div className="mt-4 flex gap-4 text-sm text-gray-300">
+            {filteredProjects.length === 0 ? (
+              <ComingSoon />
+            ) : (
+              filteredProjects.map((project) => (
+                <motion.div
+                  key={project.id}
+                  initial={{ opacity: 0, scale: 0.9 }}
+                  animate={{ opacity: 1, scale: 1 }}
+                  transition={{ duration: 0.5 }}
+                  className="group cursor-pointer"
+                >
+                  <Link href={`/projects/${project.slug}`}>
+                    <div className="relative overflow-hidden rounded-lg shadow-lg hover:shadow-xl transition-shadow duration-300">
+                      <div className="relative h-64">
+                        <ProjectImage projectSlug={project.slug} projectTitle={project.title} />
+                        {project.featured && (
+                          <div className="absolute top-4 right-4 bg-amber-500 text-white px-3 py-1 rounded-full text-sm font-medium">
+                            פרויקט מוביל
+                          </div>
+                        )}
+                      </div>
+                      <div className="p-6 bg-white">
+                        <h3 className="text-xl font-semibold mb-2 text-gray-900 group-hover:text-amber-600 transition-colors">
+                          {project.title}
+                        </h3>
+                        <p className="text-gray-600 mb-3 line-clamp-2">
+                          {project.description}
+                        </p>
+                        <div className="flex justify-between items-center text-sm text-gray-500">
                           <span>{project.location}</span>
-                          <span>•</span>
                           <span>{project.size}</span>
                         </div>
                       </div>
                     </div>
-                  </motion.div>
-                </Link>
+                  </Link>
+                </motion.div>
               ))
-            ) : (
-              <ComingSoon />
             )}
           </motion.div>
         </AnimatePresence>

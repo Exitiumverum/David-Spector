@@ -1,0 +1,409 @@
+"use client";
+
+import { useState, useEffect } from "react";
+import { useRouter } from "next/navigation";
+import { projectService, siteContentService, projectImageService, Project, SiteContent, ProjectImage } from "@/lib/supabase";
+import ProjectForm from "@/components/ProjectForm";
+import ImageUpload from "@/components/ImageUpload";
+import TextContentManager from "@/components/TextContentManager";
+
+export default function ManagementPage() {
+  const router = useRouter();
+  const [isAuthenticated, setIsAuthenticated] = useState(false);
+  const [password, setPassword] = useState("");
+  const [activeTab, setActiveTab] = useState<'projects' | 'content' | 'images'>('projects');
+  const [projects, setProjects] = useState<Project[]>([]);
+  const [loading, setLoading] = useState(false);
+  const [showProjectForm, setShowProjectForm] = useState(false);
+  const [editingProject, setEditingProject] = useState<Project | null>(null);
+  const [projectImages, setProjectImages] = useState<ProjectImage[]>([]);
+  const [loadingImages, setLoadingImages] = useState(false);
+
+  const handleLogin = () => {
+    if (password === "admin123") {
+      setIsAuthenticated(true);
+      setPassword("");
+    } else {
+      alert("סיסמה שגויה");
+    }
+  };
+
+  const handleLogout = () => {
+    setIsAuthenticated(false);
+    setPassword("");
+  };
+
+  // Fetch projects on mount
+  useEffect(() => {
+    if (isAuthenticated) {
+      fetchProjects();
+    }
+  }, [isAuthenticated]);
+
+  const fetchProjects = async () => {
+    setLoading(true);
+    try {
+      const data = await projectService.getAllProjects();
+      console.log('=== ALL PROJECTS ===');
+      data.forEach((project, index) => {
+        console.log(`Project ${index + 1}:`, {
+          id: project.id,
+          slug: project.slug,
+          title: project.title,
+          category: project.category
+        });
+      });
+      setProjects(data);
+    } catch (error) {
+      alert('שגיאה בטעינת הפרויקטים');
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const fetchProjectImages = async (projectId: string) => {
+    setLoadingImages(true);
+    try {
+      console.log('=== FETCHING IMAGES FOR PROJECT ===');
+      console.log('Project ID:', projectId);
+      
+      const images = await projectImageService.getProjectImages(projectId);
+      console.log('Raw images from database:', images);
+      console.log('Number of images fetched:', images.length);
+      
+      // Log each image with its details
+      images.forEach((img, index) => {
+        console.log(`Image ${index + 1}:`, {
+          id: img.id,
+          project_id: img.project_id,
+          image_url: img.image_url,
+          image_type: img.image_type,
+          display_order: img.display_order,
+          alt_text: img.alt_text
+        });
+      });
+      
+      // Group images by type for easier analysis
+      const byType = {
+        banner: images.filter(img => img.image_type === 'banner'),
+        gallery: images.filter(img => img.image_type === 'gallery'),
+        before: images.filter(img => img.image_type === 'before'),
+        after: images.filter(img => img.image_type === 'after')
+      };
+      
+      console.log('Images by type:', byType);
+      console.log('Banner count:', byType.banner.length);
+      console.log('Gallery count:', byType.gallery.length);
+      console.log('Before count:', byType.before.length);
+      console.log('After count:', byType.after.length);
+      
+      setProjectImages(images);
+    } catch (error) {
+      console.error('Error fetching project images:', error);
+      setProjectImages([]);
+    } finally {
+      setLoadingImages(false);
+    }
+  };
+
+  const handleCreateProject = async (projectData: any, images: any[]) => {
+    setLoading(true);
+    try {
+      const project = await projectService.createProject(projectData);
+      
+      // Create project images if any
+      if (images.length > 0) {
+        // Set the project_id for all images
+        const imagesWithProjectId = images.map(img => ({
+          ...img,
+          project_id: project.id
+        }));
+        await projectImageService.replaceProjectImages(project.id, imagesWithProjectId);
+      }
+      
+      setProjects((prev) => [...prev, project]);
+      setShowProjectForm(false);
+      alert('פרויקט נוסף בהצלחה!');
+    } catch (error) {
+      alert('שגיאה ביצירת הפרויקט');
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const handleEditProject = async (project: Project) => {
+    console.log('=== EDITING PROJECT ===');
+    console.log('Project ID:', project.id);
+    console.log('Project Slug:', project.slug);
+    console.log('Project Title:', project.title);
+    console.log('Full project data:', project);
+    
+    setEditingProject(project);
+    setShowProjectForm(true);
+    // Fetch project images when editing
+    await fetchProjectImages(project.id);
+  };
+
+  const handleUpdateProject = async (projectData: any, images: any[]) => {
+    if (!editingProject) return;
+    setLoading(true);
+    try {
+      const project = await projectService.updateProject(editingProject.id, projectData);
+      
+      // Update project images
+      if (images.length > 0) {
+        // Set the project_id for all images
+        const imagesWithProjectId = images.map(img => ({
+          ...img,
+          project_id: editingProject.id
+        }));
+        await projectImageService.replaceProjectImages(editingProject.id, imagesWithProjectId);
+      }
+      
+      setProjects((prev) => prev.map((p) => (p.id === project.id ? project : p)));
+      setEditingProject(null);
+      setShowProjectForm(false);
+      setProjectImages([]);
+      alert('פרויקט עודכן בהצלחה!');
+    } catch (error) {
+      alert('שגיאה בעדכון הפרויקט');
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const handleDeleteProject = async (id: string) => {
+    if (!confirm('האם אתה בטוח שברצונך למחוק פרויקט זה?')) return;
+    setLoading(true);
+    try {
+      await projectService.deleteProject(id);
+      setProjects((prev) => prev.filter((p) => p.id !== id));
+      alert('פרויקט נמחק בהצלחה!');
+    } catch (error) {
+      alert('שגיאה במחיקת הפרויקט');
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const debugAllImages = async () => {
+    try {
+      console.log('=== DEBUGGING ALL PROJECT IMAGES ===');
+      const allImages = await projectImageService.getAllProjectImages();
+      
+      // Group images by project_id
+      const byProject = allImages.reduce((acc, img) => {
+        if (!acc[img.project_id]) {
+          acc[img.project_id] = [];
+        }
+        acc[img.project_id].push(img);
+        return acc;
+      }, {} as Record<string, ProjectImage[]>);
+      
+      console.log('Images grouped by project_id:', byProject);
+      
+      Object.entries(byProject).forEach(([projectId, images]) => {
+        console.log(`Project ${projectId}:`, {
+          totalImages: images.length,
+          banner: images.filter(img => img.image_type === 'banner').length,
+          gallery: images.filter(img => img.image_type === 'gallery').length,
+          before: images.filter(img => img.image_type === 'before').length,
+          after: images.filter(img => img.image_type === 'after').length,
+          images: images.map(img => ({
+            id: img.id,
+            image_url: img.image_url,
+            image_type: img.image_type,
+            display_order: img.display_order
+          }))
+        });
+      });
+    } catch (error) {
+      console.error('Error debugging images:', error);
+    }
+  };
+
+  if (!isAuthenticated) {
+    return (
+      <div className="min-h-screen bg-gray-100 flex items-center justify-center">
+        <div className="bg-white p-8 rounded-lg shadow-xl max-w-md w-full border border-gray-200">
+          <h1 className="text-3xl font-bold mb-6 text-center text-gray-800">מערכת הניהול</h1>
+          <div className="space-y-4">
+            <input
+              type="password"
+              placeholder="סיסמה"
+              value={password}
+              onChange={(e) => setPassword(e.target.value)}
+              className="w-full p-3 border border-gray-300 rounded-lg text-gray-900 placeholder-gray-500 focus:ring-2 focus:ring-amber-500 focus:border-transparent"
+              onKeyPress={(e) => e.key === "Enter" && handleLogin()}
+            />
+            <button
+              onClick={handleLogin}
+              className="w-full bg-amber-500 text-white py-3 rounded-lg hover:bg-amber-600 transition-colors font-semibold"
+            >
+              התחבר
+            </button>
+          </div>
+        </div>
+      </div>
+    );
+  }
+
+  // Next: Add tabbed interface and CRUD logic
+  return (
+    <div className="min-h-screen bg-gray-100">
+      {/* Header */}
+      <header className="bg-white shadow-md border-b border-gray-200">
+        <div className="max-w-7xl mx-auto px-4 py-4">
+          <div className="flex justify-between items-center">
+            <h1 className="text-3xl font-bold text-gray-800">מערכת הניהול</h1>
+            <button
+              onClick={handleLogout}
+              className="bg-red-500 text-white px-6 py-2 rounded-lg hover:bg-red-600 transition-colors font-semibold"
+            >
+              התנתק
+            </button>
+          </div>
+        </div>
+      </header>
+
+      {/* Navigation Tabs */}
+      <div className="max-w-7xl mx-auto px-4 py-4">
+        <div className="flex space-x-4 border-b border-gray-200">
+          <button
+            onClick={() => setActiveTab('projects')}
+            className={`py-3 px-6 border-b-2 transition-colors font-semibold ${
+              activeTab === 'projects' ? 'border-amber-500 text-amber-600' : 'border-transparent text-gray-600 hover:text-gray-800'
+            }`}
+          >
+            פרויקטים
+          </button>
+          <button
+            onClick={() => setActiveTab('content')}
+            className={`py-3 px-6 border-b-2 transition-colors font-semibold ${
+              activeTab === 'content' ? 'border-amber-500 text-amber-600' : 'border-transparent text-gray-600 hover:text-gray-800'
+            }`}
+          >
+            תוכן טקסט
+          </button>
+          <button
+            onClick={() => setActiveTab('images')}
+            className={`py-3 px-6 border-b-2 transition-colors font-semibold ${
+              activeTab === 'images' ? 'border-amber-500 text-amber-600' : 'border-transparent text-gray-600 hover:text-gray-800'
+            }`}
+          >
+            תמונות
+          </button>
+        </div>
+      </div>
+
+      {/* Main Content */}
+      <main className="max-w-7xl mx-auto px-4 py-8">
+        {activeTab === 'projects' && (
+          <div className="space-y-8">
+            {/* Add New Project Button */}
+            <div className="bg-white p-6 rounded-lg shadow-lg border border-gray-200">
+              <div className="flex justify-between items-center">
+                <h2 className="text-2xl font-bold text-gray-800">פרויקטים</h2>
+                <div className="flex gap-4">
+                  {/* <button
+                    onClick={debugAllImages}
+                    className="bg-blue-500 text-white py-3 px-6 rounded-lg hover:bg-blue-600 transition-colors font-semibold"
+                  >
+                    Debug Images
+                  </button> */}
+                  <button
+                    onClick={() => { 
+                      setShowProjectForm(true); 
+                      setEditingProject(null); 
+                      setProjectImages([]); // Clear images when adding new project
+                    }}
+                    className="bg-amber-500 text-white py-3 px-6 rounded-lg hover:bg-amber-600 transition-colors font-semibold"
+                  >
+                    הוסף פרויקט חדש
+                  </button>
+                </div>
+              </div>
+            </div>
+
+            {/* Project Form - Full Page */}
+            {showProjectForm && (
+              <div className="bg-white p-8 rounded-lg shadow-lg border border-gray-200">
+                <div className="flex justify-between items-center mb-6">
+                  <h2 className="text-2xl font-bold text-gray-800">{editingProject ? 'ערוך פרויקט' : 'הוסף פרויקט חדש'}</h2>
+                </div>
+                <ProjectForm
+                  initialData={editingProject ?? undefined}
+                  onSubmit={editingProject ? handleUpdateProject : handleCreateProject}
+                  onCancel={() => { 
+                    setShowProjectForm(false); 
+                    setEditingProject(null); 
+                    setProjectImages([]);
+                  }}
+                  loading={loading}
+                  initialImages={projectImages}
+                />
+              </div>
+            )}
+
+            {/* Projects List - Only show when not creating a project */}
+            {!showProjectForm && (
+              <div className="bg-white p-8 rounded-lg shadow-lg border border-gray-200">
+                <h2 className="text-2xl font-bold mb-6 text-gray-800">פרויקטים קיימים</h2>
+                <div className="space-y-6">
+                  {projects.map((project) => (
+                    <div key={project.id} className="border border-gray-200 rounded-lg p-6 hover:shadow-md transition-shadow">
+                      <div className="flex justify-between items-start">
+                        <div className="flex-1">
+                          <h3 className="font-bold text-xl text-gray-800 mb-2">{project.title}</h3>
+                          <p className="text-gray-800 mb-3">{project.description}</p>
+                          <div className="flex gap-4 text-sm text-gray-600">
+                            <span className="bg-gray-100 px-3 py-1 rounded-full">קטגוריה: {project.category}</span>
+                            <span className="bg-gray-100 px-3 py-1 rounded-full">מיקום: {project.location}</span>
+                            <span className="bg-gray-100 px-3 py-1 rounded-full">גודל: {project.size}</span>
+                            {project.featured && (
+                              <span className="bg-amber-100 text-amber-800 px-3 py-1 rounded-full font-semibold">
+                                פרויקט מוביל
+                              </span>
+                            )}
+                          </div>
+                        </div>
+                        <div className="flex gap-3">
+                          <button
+                            onClick={() => handleEditProject(project)}
+                            className="bg-blue-500 text-white px-4 py-2 rounded-lg text-sm hover:bg-blue-600 transition-colors font-semibold"
+                          >
+                            ערוך
+                          </button>
+                          <button
+                            onClick={() => handleDeleteProject(project.id)}
+                            className="bg-red-500 text-white px-4 py-2 rounded-lg text-sm hover:bg-red-600 transition-colors font-semibold"
+                          >
+                            מחק
+                          </button>
+                        </div>
+                      </div>
+                    </div>
+                  ))}
+                </div>
+              </div>
+            )}
+          </div>
+        )}
+        {activeTab === 'content' && (
+          <div className="space-y-8">
+            <div className="bg-white p-6 rounded-lg shadow-lg border border-gray-200">
+              <h2 className="text-2xl font-bold text-gray-800 mb-6">ניהול תוכן טקסט</h2>
+              <TextContentManager />
+            </div>
+          </div>
+        )}
+        {activeTab === 'images' && (
+          <div className="bg-white p-8 rounded-lg shadow-lg border border-gray-200 text-center">
+            <h2 className="text-2xl font-bold text-gray-800 mb-4">ניהול תמונות</h2>
+            <p className="text-gray-600">(כאן תופיע מערכת ניהול התמונות)</p>
+          </div>
+        )}
+      </main>
+    </div>
+  );
+} 

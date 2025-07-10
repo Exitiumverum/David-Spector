@@ -1,31 +1,66 @@
 'use client';
 
+import { useEffect, useState } from 'react';
 import Image from 'next/image';
+import { siteContentService, SiteContent } from '@/lib/supabase';
 
 export default function AboutPage() {
+  const [content, setContent] = useState<SiteContent[]>([]);
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    const fetchAboutContent = async () => {
+      try {
+        const aboutContent = await siteContentService.getSiteContentBySection('about');
+        setContent(aboutContent);
+      } catch (error) {
+        console.error('Error fetching about content:', error);
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    fetchAboutContent();
+  }, []);
+
+  // Helper function to get content by key
+  const getContent = (key: string) => {
+    return content.find(c => c.key === key)?.hebrew || '';
+  };
+
+  if (loading) {
+    return (
+      <main className="min-h-screen bg-white text-gray-900">
+        <div className="max-w-7xl mx-auto px-4 py-20">
+          <div className="animate-pulse text-yellow-600 text-xl text-center">טוען...</div>
+        </div>
+      </main>
+    );
+  }
+
   return (
     <main className="min-h-screen bg-white text-gray-900">
       <div className="max-w-7xl mx-auto px-4 py-20">
-        <h1 className="text-4xl md:text-5xl font-light mb-8 text-center">נעים להכיר!</h1>
+        <h1 className="text-4xl md:text-5xl font-light mb-8 text-center">{getContent('about_title')}</h1>
         <div className="grid md:grid-cols-2 gap-12 items-center">
           <div className="space-y-6 text-lg text-black">
             <p>
-              נעים להכיר!
+              {getContent('about_title')}
             </p>
             <p>
-              אני מאמין שהמרחב שסביבנו משפיע על איך שאנחנו מרגישים, חושבים, ואפילו על מערכות היחסים שלנו. לפעמים קשה לשים את האצבע על מה הופך חלל ל&quot;נעים&quot; או &quot;קודר&quot; – אבל כולנו מרגישים את זה מיד.
+              {getContent('about_intro')}
             </p>
             <p>
-              דרך עיצוב, תכנון והדמיה, אני עוזר לאנשים לראות את הפוטנציאל האמיתי של נכסים – בין אם הם גרים בהם, משכירים אותם או רוצים לקנות נכס.
+              {getContent('about_mission')}
             </p>
             <p>
-              שינוי קטן יכול לעשות הבדל ענק – בדיוק בשביל זה אני כאן.
+              {getContent('about_impact')}
             </p>
             <p>
-              צברתי ניסיון עשיר בתכנון, עיצוב וניהול פרויקטים – מדירות ובתים פרטיים ועד שכונות של מאות יחידות דיור במשרד פיבקו אדריכלים ועוד. כיום אני משלב את תחומי ההתמחות שלי – אדריכלות, עיצוב פנים ותיווך נדל&quot;ן ברימקס אושן תל אביב – כדי להעניק לכם פתרון שלם, מקצועי ומדויק.
+              {getContent('about_experience')}
             </p>
             <p>
-              בזכות ההבנה הרחבה שלי במרחב, בערך שעיצוב טוב נותן ובשוק הנדל&quot;ן, אני רואה את הנכס שלכם לא רק כמו שהוא – אלא כמו שהוא יכול להיות.
+              {getContent('about_vision')}
             </p>
             {/* <p className="text-gray-600">
               דוד מתמחה בפרויקטים מגוונים הכוללים בתי מגורים, חללים מסחריים ופרויקטים של אירוח, כאשר כל פרויקט משקף את מחויבותו ליצירת חללים יפים ופונקציונליים.
