@@ -1,45 +1,67 @@
 import { NextRequest, NextResponse } from 'next/server';
+import { supabaseAdmin } from '@/lib/supabase';
 
-// This will be replaced with Supabase calls
 export async function GET() {
   try {
-    // TODO: Replace with Supabase query
-    return NextResponse.json({ content: [] });
+    const { data, error } = await supabaseAdmin
+      .from('site_content')
+      .select('*')
+      .order('section', { ascending: true });
+    
+    if (error) {
+      console.error('Database error:', error);
+      return NextResponse.json({ error: 'Failed to fetch content' }, { status: 500 });
+    }
+    
+    return NextResponse.json(data);
   } catch (error) {
-    return NextResponse.json({ error: 'Failed to fetch content' }, { status: 500 });
+    console.error('Unexpected error:', error);
+    return NextResponse.json({ error: 'Internal server error' }, { status: 500 });
   }
 }
 
 export async function POST(request: NextRequest) {
   try {
     const body = await request.json();
+    const { data, error } = await supabaseAdmin
+      .from('site_content')
+      .insert([body])
+      .select()
+      .single();
     
-    // TODO: Replace with Supabase insert
-    const content = {
-      id: Date.now().toString(),
-      ...body,
-      created_at: new Date().toISOString()
-    };
+    if (error) {
+      console.error('Database error:', error);
+      return NextResponse.json({ error: 'Failed to create content' }, { status: 500 });
+    }
     
-    return NextResponse.json({ content });
+    return NextResponse.json(data);
   } catch (error) {
-    return NextResponse.json({ error: 'Failed to create content' }, { status: 500 });
+    console.error('Unexpected error:', error);
+    return NextResponse.json({ error: 'Internal server error' }, { status: 500 });
   }
 }
 
 export async function PUT(request: NextRequest) {
   try {
     const body = await request.json();
+    const { id, ...updates } = body;
     
-    // TODO: Replace with Supabase update
-    const content = {
-      ...body,
-      updated_at: new Date().toISOString()
-    };
+    const { data, error } = await supabaseAdmin
+      .from('site_content')
+      .update(updates)
+      .eq('id', id)
+      .select()
+      .single();
     
-    return NextResponse.json({ content });
+    if (error) {
+      console.error('Database error:', error);
+      return NextResponse.json({ error: 'Failed to update content' }, { status: 500 });
+    }
+    
+    return NextResponse.json(data);
   } catch (error) {
-    return NextResponse.json({ error: 'Failed to update content' }, { status: 500 });
+    console.error('Unexpected error:', error);
+    return NextResponse.json({ error: 'Internal server error' }, { status: 500 });
   }
 }
 
@@ -49,12 +71,22 @@ export async function DELETE(request: NextRequest) {
     const id = searchParams.get('id');
     
     if (!id) {
-      return NextResponse.json({ error: 'Content ID is required' }, { status: 400 });
+      return NextResponse.json({ error: 'ID is required' }, { status: 400 });
     }
     
-    // TODO: Replace with Supabase delete
+    const { error } = await supabaseAdmin
+      .from('site_content')
+      .delete()
+      .eq('id', id);
+    
+    if (error) {
+      console.error('Database error:', error);
+      return NextResponse.json({ error: 'Failed to delete content' }, { status: 500 });
+    }
+    
     return NextResponse.json({ success: true });
   } catch (error) {
-    return NextResponse.json({ error: 'Failed to delete content' }, { status: 500 });
+    console.error('Unexpected error:', error);
+    return NextResponse.json({ error: 'Internal server error' }, { status: 500 });
   }
 } 

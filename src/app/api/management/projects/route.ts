@@ -1,29 +1,68 @@
 import { NextRequest, NextResponse } from 'next/server';
+import { supabaseAdmin } from '@/lib/supabase';
 
-// This will be replaced with Supabase calls
 export async function GET() {
   try {
-    // TODO: Replace with Supabase query
-    return NextResponse.json({ projects: [] });
+    const { data, error } = await supabaseAdmin
+      .from('projects')
+      .select('*')
+      .order('featured', { ascending: false })
+      .order('created_at', { ascending: false });
+    
+    if (error) {
+      console.error('Database error:', error);
+      return NextResponse.json({ error: 'Failed to fetch projects' }, { status: 500 });
+    }
+    
+    return NextResponse.json(data);
   } catch (error) {
-    return NextResponse.json({ error: 'Failed to fetch projects' }, { status: 500 });
+    console.error('Unexpected error:', error);
+    return NextResponse.json({ error: 'Internal server error' }, { status: 500 });
   }
 }
 
 export async function POST(request: NextRequest) {
   try {
     const body = await request.json();
+    const { data, error } = await supabaseAdmin
+      .from('projects')
+      .insert([body])
+      .select()
+      .single();
     
-    // TODO: Replace with Supabase insert
-    const project = {
-      id: Date.now().toString(),
-      ...body,
-      created_at: new Date().toISOString()
-    };
+    if (error) {
+      console.error('Database error:', error);
+      return NextResponse.json({ error: 'Failed to create project' }, { status: 500 });
+    }
     
-    return NextResponse.json({ project });
+    return NextResponse.json(data);
   } catch (error) {
-    return NextResponse.json({ error: 'Failed to create project' }, { status: 500 });
+    console.error('Unexpected error:', error);
+    return NextResponse.json({ error: 'Internal server error' }, { status: 500 });
+  }
+}
+
+export async function PUT(request: NextRequest) {
+  try {
+    const body = await request.json();
+    const { id, ...updates } = body;
+    
+    const { data, error } = await supabaseAdmin
+      .from('projects')
+      .update(updates)
+      .eq('id', id)
+      .select()
+      .single();
+    
+    if (error) {
+      console.error('Database error:', error);
+      return NextResponse.json({ error: 'Failed to update project' }, { status: 500 });
+    }
+    
+    return NextResponse.json(data);
+  } catch (error) {
+    console.error('Unexpected error:', error);
+    return NextResponse.json({ error: 'Internal server error' }, { status: 500 });
   }
 }
 
@@ -36,9 +75,19 @@ export async function DELETE(request: NextRequest) {
       return NextResponse.json({ error: 'Project ID is required' }, { status: 400 });
     }
     
-    // TODO: Replace with Supabase delete
+    const { error } = await supabaseAdmin
+      .from('projects')
+      .delete()
+      .eq('id', id);
+    
+    if (error) {
+      console.error('Database error:', error);
+      return NextResponse.json({ error: 'Failed to delete project' }, { status: 500 });
+    }
+    
     return NextResponse.json({ success: true });
   } catch (error) {
-    return NextResponse.json({ error: 'Failed to delete project' }, { status: 500 });
+    console.error('Unexpected error:', error);
+    return NextResponse.json({ error: 'Internal server error' }, { status: 500 });
   }
 } 

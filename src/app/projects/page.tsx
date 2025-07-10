@@ -4,7 +4,7 @@ import { useState, useEffect } from 'react';
 import Image from 'next/image';
 import { motion, AnimatePresence } from 'framer-motion';
 import Link from 'next/link';
-import { projectService, siteContentService, Project, SiteContent } from '@/lib/supabase';
+import { projectService, siteContentService, Project } from '@/lib/supabase';
 
 // Component that tries multiple image extensions
 const ProjectImage = ({ projectSlug, projectTitle }: { projectSlug: string; projectTitle: string }) => {
@@ -49,7 +49,7 @@ const ComingSoon = () => (
     initial={{ opacity: 0, y: 20 }}
     animate={{ opacity: 1, y: 0 }}
     transition={{ duration: 0.8 }}
-    className="col-span-full flex flex-col items-center justify-center py-20 px-4 text-center"
+    className="flex flex-col items-center justify-center py-24"
   >
     <motion.div
       animate={{ 

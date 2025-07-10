@@ -9,7 +9,7 @@ import 'swiper/css';
 import 'swiper/css/navigation';
 import 'swiper/css/pagination';
 import { useEffect, useState } from 'react';
-import { projectService, siteContentService, Project, SiteContent } from '@/lib/supabase';
+import { projectService, siteContentService, Project } from '@/lib/supabase';
 
 // Component that tries multiple image extensions
 const ProjectImage = ({ projectSlug, projectTitle }: { projectSlug: string; projectTitle: string }) => {
