@@ -126,8 +126,8 @@ export default function TextContentManager() {
   return (
     <div className="space-y-6">
       <div className="mb-6">
-        <h3 className="text-lg font-semibold text-gray-800 mb-2">עריכת תוכן דף "אודות"</h3>
-        <p className="text-gray-600 text-sm">ערוך את הטקסטים המוצגים בדף "אודות"</p>
+        <h3 className="text-lg font-semibold text-gray-800 mb-2">עריכת תוכן דף &quot;אודות&quot;</h3>
+        <p className="text-gray-600 text-sm">ערוך את הטקסטים המוצגים בדף &quot;אודות&quot;</p>
       </div>
 
       <div className="grid gap-6">

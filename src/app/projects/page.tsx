@@ -4,7 +4,7 @@ import { useState, useEffect } from 'react';
 import Image from 'next/image';
 import { motion, AnimatePresence } from 'framer-motion';
 import Link from 'next/link';
-import { projectService, siteContentService, Project, SiteContent } from '@/lib/supabase';
+import { projectService, siteContentService, Project } from '@/lib/supabase';
 
 // Component that tries multiple image extensions
 const ProjectImage = ({ projectSlug, projectTitle }: { projectSlug: string; projectTitle: string }) => {

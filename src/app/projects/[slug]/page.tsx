@@ -12,51 +12,13 @@ import 'swiper/css/pagination';
 import { projectService, projectImageService, projectContentService, Project, ProjectImage, ProjectContent } from '@/lib/supabase';
 import { notFound } from 'next/navigation';
 
-// Component that tries multiple image extensions
-const ProjectBannerImage = ({ projectSlug, projectTitle }: { projectSlug: string; projectTitle: string }) => {
-  const [imageError, setImageError] = useState(false);
-  const [currentExtensionIndex, setCurrentExtensionIndex] = useState(0);
-  
-  const extensions = ['01.jpg', '01.jpeg', '01.png', '01.JPG', '01.JPEG', '01.PNG'];
-  
-  const handleImageError = () => {
-    if (currentExtensionIndex < extensions.length - 1) {
-      setCurrentExtensionIndex(currentExtensionIndex + 1);
-    } else {
-      setImageError(true);
-    }
-  };
-  
-  if (imageError) {
-    return (
-      <div className="w-full h-full bg-gray-200 flex items-center justify-center">
-        <span className="text-gray-500 text-sm">תמונה לא זמינה</span>
-      </div>
-    );
-  }
-  
-  const currentExtension = extensions[currentExtensionIndex];
-  const imagePath = `/images/projects/${projectSlug}/${currentExtension}`;
-  
-  return (
-    <Image
-      src={imagePath}
-      alt={projectTitle}
-      fill
-      className="object-cover"
-      priority
-      onError={handleImageError}
-    />
-  );
-};
-
 interface ProjectPageProps {
-  params: {
+  params: Promise<{
     slug: string;
-  };
+  }>;
 }
 
-export default function ProjectPage({ params }: ProjectPageProps) {
+function ProjectPageContent({ slug }: { slug: string }) {
   const [project, setProject] = useState<Project | null>(null);
   const [images, setImages] = useState<ProjectImage[]>([]);
   const [content, setContent] = useState<ProjectContent[]>([]);
@@ -66,7 +28,7 @@ export default function ProjectPage({ params }: ProjectPageProps) {
     const fetchProjectData = async () => {
       try {
         // Fetch project data
-        const projectData = await projectService.getProjectBySlug(params.slug);
+        const projectData = await projectService.getProjectBySlug(slug);
         if (!projectData) {
           notFound();
         }
@@ -88,7 +50,7 @@ export default function ProjectPage({ params }: ProjectPageProps) {
     };
 
     fetchProjectData();
-  }, [params.slug]);
+  }, [slug]);
 
   if (loading) {
     return (
@@ -116,7 +78,6 @@ export default function ProjectPage({ params }: ProjectPageProps) {
   }));
 
   const projectDescription = content.find(c => c.section === 'project_description')?.content_hebrew || '';
-  const projectDetails = content.find(c => c.section === 'details')?.content_hebrew || `מיקום: ${project.location}\nגודל: ${project.size}`;
 
   return (
     <main className="min-h-screen bg-white">
@@ -217,4 +178,9 @@ export default function ProjectPage({ params }: ProjectPageProps) {
       `}</style>
     </main>
   );
+}
+
+export default async function ProjectPage({ params }: ProjectPageProps) {
+  const { slug } = await params;
+  return <ProjectPageContent slug={slug} />;
 } 

@@ -1,9 +1,9 @@
 'use client';
 
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useCallback } from 'react';
 import Image from 'next/image';
 import ImageUpload from './ImageUpload';
-import { Project, ProjectImage } from '@/lib/supabase';
+import { ProjectImage } from '@/lib/supabase';
 
 interface ProjectFormData {
   title: string;
@@ -48,7 +48,7 @@ export default function ProjectForm({ onSubmit, onCancel, loading = false, initi
   });
 
   // Process initial images into the expected format
-  const processInitialImages = () => {
+  const processInitialImages = useCallback(() => {
     console.log('Processing initial images:', initialImages);
     console.log('Total images to process:', initialImages.length);
     
@@ -77,7 +77,6 @@ export default function ProjectForm({ onSubmit, onCancel, loading = false, initi
     const beforeAfterPairs: BeforeAfterPair[] = [];
     
     // Create pairs based on display_order
-    const allImages = [...beforeImages, ...afterImages].sort((a, b) => a.display_order - b.display_order);
     const processedBefore = new Set();
     const processedAfter = new Set();
     
@@ -132,7 +131,7 @@ export default function ProjectForm({ onSubmit, onCancel, loading = false, initi
     };
     console.log('Processed images result:', result);
     return result;
-  };
+  }, [initialImages]);
 
   const [images, setImages] = useState<{
     banner?: string;
@@ -146,9 +145,9 @@ export default function ProjectForm({ onSubmit, onCancel, loading = false, initi
   useEffect(() => {
     console.log('initialImages changed:', initialImages);
     setImages(processInitialImages());
-  }, [initialImages]);
+  }, [initialImages, processInitialImages]);
 
-  const handleInputChange = (field: keyof ProjectFormData, value: any) => {
+  const handleInputChange = (field: keyof ProjectFormData, value: string | boolean) => {
     setFormData(prev => ({ ...prev, [field]: value }));
     // Clear error when user starts typing
     if (errors[field]) {
@@ -478,7 +477,7 @@ export default function ProjectForm({ onSubmit, onCancel, loading = false, initi
         {/* Before/After Images */}
         <div className="mb-8">
           <div className="flex justify-between items-center mb-6">
-            <h4 className="text-lg font-semibold text-gray-700">תמונות Before & After</h4>
+            <h4 className="text-lg font-semibold text-gray-700">תמונות Before &amp; After</h4>
             <button
               type="button"
               onClick={addBeforeAfterPair}
@@ -577,8 +576,8 @@ export default function ProjectForm({ onSubmit, onCancel, loading = false, initi
             
             {images.beforeAfterPairs.length === 0 && (
               <div className="text-center text-gray-500 py-8">
-                <p>לא נוספו תמונות Before & After עדיין</p>
-                <p className="text-sm">לחץ על "הוסף זוג תמונות" כדי להתחיל</p>
+                <p>לא נוספו תמונות Before &amp; After עדיין</p>
+                <p className="text-sm">לחץ על &quot;הוסף זוג תמונות&quot; כדי להתחיל</p>
               </div>
             )}
           </div>

@@ -27,7 +27,7 @@ export interface Project {
   location_en?: string;
   size: string;
   featured: boolean;
-  project_details?: any;
+  project_details?: Record<string, unknown>;
   created_at: string;
   updated_at: string;
 }
@@ -133,39 +133,35 @@ export const projectService = {
   },
 
   async updateProject(id: string, updates: Partial<Project>) {
-    console.log('Updating project with ID:', id);
-    
-    // Filter out system fields that shouldn't be updated
-    const { id: _, created_at: __, updated_at: ___, ...updateData } = updates;
-    
-    // Filter out null/undefined values
-    const cleanUpdateData = Object.fromEntries(
-      Object.entries(updateData).filter(([_, value]) => value !== null && value !== undefined)
-    );
-    
-    console.log('Clean update data:', cleanUpdateData);
-    
     const { data, error } = await supabaseAdmin
       .from('projects')
-      .update(cleanUpdateData)
+      .update(updates)
       .eq('id', id)
       .select()
-      .maybeSingle();
+      .single();
     
-    if (error) {
-      console.error('Supabase update error:', error);
-      console.error('Update data:', cleanUpdateData);
-      throw error;
-    }
-    
-    if (!data) {
-      throw new Error(`Project with ID ${id} not found`);
-    }
-    
+    if (error) throw error;
     return data;
   },
 
   async deleteProject(id: string) {
+    // First delete all project images
+    const { error: imagesError } = await supabaseAdmin
+      .from('project_images')
+      .delete()
+      .eq('project_id', id);
+    
+    if (imagesError) throw imagesError;
+    
+    // Then delete project content
+    const { error: contentError } = await supabaseAdmin
+      .from('project_content')
+      .delete()
+      .eq('project_id', id);
+    
+    if (contentError) throw contentError;
+    
+    // Finally delete the project
     const { error } = await supabaseAdmin
       .from('projects')
       .delete()

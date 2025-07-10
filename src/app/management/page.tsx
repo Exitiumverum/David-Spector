@@ -1,14 +1,27 @@
 "use client";
 
 import { useState, useEffect } from "react";
-import { useRouter } from "next/navigation";
-import { projectService, siteContentService, projectImageService, Project, SiteContent, ProjectImage } from "@/lib/supabase";
+import { projectService, projectImageService, ProjectImage } from "@/lib/supabase";
 import ProjectForm from "@/components/ProjectForm";
-import ImageUpload from "@/components/ImageUpload";
-import TextContentManager from "@/components/TextContentManager";
+
+interface ProjectFormData {
+  title: string;
+  title_en?: string;
+  description: string;
+  description_en?: string;
+  category: 'apartments' | 'private-homes' | 'other-projects' | 'concepts';
+  location: string;
+  location_en?: string;
+  size: string;
+  featured: boolean;
+  slug: string;
+}
+
+interface Project extends ProjectFormData {
+  id: string;
+}
 
 export default function ManagementPage() {
-  const router = useRouter();
   const [isAuthenticated, setIsAuthenticated] = useState(false);
   const [password, setPassword] = useState("");
   const [activeTab, setActiveTab] = useState<'projects' | 'content' | 'images'>('projects');
@@ -17,7 +30,6 @@ export default function ManagementPage() {
   const [showProjectForm, setShowProjectForm] = useState(false);
   const [editingProject, setEditingProject] = useState<Project | null>(null);
   const [projectImages, setProjectImages] = useState<ProjectImage[]>([]);
-  const [loadingImages, setLoadingImages] = useState(false);
 
   const handleLogin = () => {
     if (password === "admin123") {
@@ -55,6 +67,7 @@ export default function ManagementPage() {
       });
       setProjects(data);
     } catch (error) {
+      console.error('Error fetching projects:', error);
       alert('שגיאה בטעינת הפרויקטים');
     } finally {
       setLoading(false);
@@ -62,7 +75,6 @@ export default function ManagementPage() {
   };
 
   const fetchProjectImages = async (projectId: string) => {
-    setLoadingImages(true);
     try {
       console.log('=== FETCHING IMAGES FOR PROJECT ===');
       console.log('Project ID:', projectId);
@@ -101,12 +113,10 @@ export default function ManagementPage() {
     } catch (error) {
       console.error('Error fetching project images:', error);
       setProjectImages([]);
-    } finally {
-      setLoadingImages(false);
     }
   };
 
-  const handleCreateProject = async (projectData: any, images: any[]) => {
+  const handleCreateProject = async (projectData: ProjectFormData, images: ProjectImage[]) => {
     setLoading(true);
     try {
       const project = await projectService.createProject(projectData);
@@ -125,6 +135,7 @@ export default function ManagementPage() {
       setShowProjectForm(false);
       alert('פרויקט נוסף בהצלחה!');
     } catch (error) {
+      console.error('Error creating project:', error);
       alert('שגיאה ביצירת הפרויקט');
     } finally {
       setLoading(false);
@@ -144,7 +155,7 @@ export default function ManagementPage() {
     await fetchProjectImages(project.id);
   };
 
-  const handleUpdateProject = async (projectData: any, images: any[]) => {
+  const handleUpdateProject = async (projectData: ProjectFormData, images: ProjectImage[]) => {
     if (!editingProject) return;
     setLoading(true);
     try {
@@ -166,6 +177,7 @@ export default function ManagementPage() {
       setProjectImages([]);
       alert('פרויקט עודכן בהצלחה!');
     } catch (error) {
+      console.error('Error updating project:', error);
       alert('שגיאה בעדכון הפרויקט');
     } finally {
       setLoading(false);
@@ -180,45 +192,10 @@ export default function ManagementPage() {
       setProjects((prev) => prev.filter((p) => p.id !== id));
       alert('פרויקט נמחק בהצלחה!');
     } catch (error) {
+      console.error('Error deleting project:', error);
       alert('שגיאה במחיקת הפרויקט');
     } finally {
       setLoading(false);
-    }
-  };
-
-  const debugAllImages = async () => {
-    try {
-      console.log('=== DEBUGGING ALL PROJECT IMAGES ===');
-      const allImages = await projectImageService.getAllProjectImages();
-      
-      // Group images by project_id
-      const byProject = allImages.reduce((acc, img) => {
-        if (!acc[img.project_id]) {
-          acc[img.project_id] = [];
-        }
-        acc[img.project_id].push(img);
-        return acc;
-      }, {} as Record<string, ProjectImage[]>);
-      
-      console.log('Images grouped by project_id:', byProject);
-      
-      Object.entries(byProject).forEach(([projectId, images]) => {
-        console.log(`Project ${projectId}:`, {
-          totalImages: images.length,
-          banner: images.filter(img => img.image_type === 'banner').length,
-          gallery: images.filter(img => img.image_type === 'gallery').length,
-          before: images.filter(img => img.image_type === 'before').length,
-          after: images.filter(img => img.image_type === 'after').length,
-          images: images.map(img => ({
-            id: img.id,
-            image_url: img.image_url,
-            image_type: img.image_type,
-            display_order: img.display_order
-          }))
-        });
-      });
-    } catch (error) {
-      console.error('Error debugging images:', error);
     }
   };
 
@@ -393,7 +370,7 @@ export default function ManagementPage() {
           <div className="space-y-8">
             <div className="bg-white p-6 rounded-lg shadow-lg border border-gray-200">
               <h2 className="text-2xl font-bold text-gray-800 mb-6">ניהול תוכן טקסט</h2>
-              <TextContentManager />
+              {/* TextContentManager component was removed */}
             </div>
           </div>
         )}
