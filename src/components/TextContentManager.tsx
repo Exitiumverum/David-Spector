@@ -47,7 +47,7 @@ export default function TextContentManager() {
   const [loading, setLoading] = useState(true);
   const [saving, setSaving] = useState(false);
   const [editingKey, setEditingKey] = useState<string | null>(null);
-  const [editValues, setEditValues] = useState<{ hebrew: string; english: string }>({ hebrew: '', english: '' });
+  const [editValues, setEditValues] = useState<{ hebrew: string }>({ hebrew: '' });
 
   useEffect(() => {
     fetchContent();
@@ -72,8 +72,7 @@ export default function TextContentManager() {
     const existingContent = getContent(section.key);
     setEditingKey(section.key);
     setEditValues({
-      hebrew: existingContent?.hebrew || '',
-      english: existingContent?.english || ''
+      hebrew: existingContent?.hebrew || ''
     });
   };
 
@@ -85,15 +84,13 @@ export default function TextContentManager() {
       if (existingContent) {
         // Update existing content
         await siteContentService.updateSiteContent(existingContent.id, {
-          hebrew: editValues.hebrew,
-          english: editValues.english
+          hebrew: editValues.hebrew
         });
       } else {
         // Create new content
         await siteContentService.createSiteContent({
           key,
           hebrew: editValues.hebrew,
-          english: editValues.english,
           section: 'about'
         });
       }
@@ -112,7 +109,7 @@ export default function TextContentManager() {
 
   const handleCancel = () => {
     setEditingKey(null);
-    setEditValues({ hebrew: '', english: '' });
+    setEditValues({ hebrew: '' });
   };
 
   if (loading) {
@@ -162,16 +159,6 @@ export default function TextContentManager() {
                       className="w-full p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-amber-500 focus:border-transparent text-gray-900"
                       rows={4}
                       placeholder="הזן תוכן בעברית..."
-                    />
-                  </div>
-                  <div>
-                    <label className="block text-sm font-medium text-gray-700 mb-2">תוכן באנגלית (אופציונלי)</label>
-                    <textarea
-                      value={editValues.english}
-                      onChange={(e) => setEditValues(prev => ({ ...prev, english: e.target.value }))}
-                      className="w-full p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-amber-500 focus:border-transparent text-gray-900"
-                      rows={4}
-                      placeholder="Enter content in English (optional)..."
                     />
                   </div>
                   <div className="flex gap-3">
