@@ -10,7 +10,8 @@
     "upload-images": "node upload-images.js",
     "update-image-urls": "node update-image-urls.js",
     "setup-images": "npm run upload-images && npm run update-image-urls",
-    "setup-site-images": "node setup-site-images.js"
+    "setup-site-images": "node setup-site-images.js",
+    "setup-admin-user": "node setup-admin-user.js"
   },
   "dependencies": {
     "@supabase/supabase-js": "^2.50.4",
