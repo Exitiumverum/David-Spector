@@ -1,20 +1,20 @@
 "use client";
 
 import { useState, useEffect } from "react";
-import { projectService, projectImageService, ProjectImage } from "@/lib/supabase";
+import { projectService, projectImageService, projectContentService, ProjectImage } from "@/lib/supabase";
 import ProjectForm from "@/components/ProjectForm";
+import SiteContentManager from "@/components/SiteContentManager";
+import ImageManager from "@/components/ImageManager";
 
 interface ProjectFormData {
   title: string;
-  title_en?: string;
   description: string;
-  description_en?: string;
   category: 'apartments' | 'private-homes' | 'other-projects' | 'concepts';
   location: string;
-  location_en?: string;
   size: string;
   featured: boolean;
   slug: string;
+  detailedDescription?: string; // Added for detailed description
 }
 
 interface Project extends ProjectFormData {
@@ -30,6 +30,8 @@ export default function ManagementPage() {
   const [showProjectForm, setShowProjectForm] = useState(false);
   const [editingProject, setEditingProject] = useState<Project | null>(null);
   const [projectImages, setProjectImages] = useState<ProjectImage[]>([]);
+  const [detailedDescription, setDetailedDescription] = useState<string>('');
+  const [loadingDetailedDescription, setLoadingDetailedDescription] = useState(false);
 
   const handleLogin = () => {
     if (password === "admin123") {
@@ -116,10 +118,23 @@ export default function ManagementPage() {
     }
   };
 
-  const handleCreateProject = async (projectData: ProjectFormData, images: ProjectImage[]) => {
+  const handleCreateProject = async (projectData: ProjectFormData, images: ProjectImage[], imagesToDelete: string[] = []) => {
     setLoading(true);
     try {
-      const project = await projectService.createProject(projectData);
+      // Filter out detailedDescription from project data since it's stored in project_content table
+      const { detailedDescription, ...projectCreateData } = projectData;
+      
+      const project = await projectService.createProject(projectCreateData);
+      
+      // Create detailed description in project_content
+      if (detailedDescription) {
+        await projectContentService.createProjectContent({
+          project_id: project.id,
+          section: 'project_description',
+          content_hebrew: detailedDescription,
+          display_order: 1
+        });
+      }
       
       // Create project images if any
       if (images.length > 0) {
@@ -150,16 +165,68 @@ export default function ManagementPage() {
     console.log('Full project data:', project);
     
     setEditingProject(project);
+    setLoadingDetailedDescription(true);
     setShowProjectForm(true);
     // Fetch project images when editing
     await fetchProjectImages(project.id);
+    
+    // Fetch detailed description
+    try {
+      console.log('=== FETCHING DETAILED DESCRIPTION ===');
+      const projectContent = await projectContentService.getProjectContent(project.id);
+      console.log('Project content:', projectContent);
+      const detailedDesc = projectContent.find(c => c.section === 'project_description')?.content_hebrew || '';
+      console.log('Detailed description found:', detailedDesc);
+      setDetailedDescription(detailedDesc);
+    } catch (error) {
+      console.error('Error fetching project content:', error);
+      setDetailedDescription('');
+    } finally {
+      setLoadingDetailedDescription(false);
+    }
   };
 
-  const handleUpdateProject = async (projectData: ProjectFormData, images: ProjectImage[]) => {
+  const handleUpdateProject = async (projectData: ProjectFormData, images: ProjectImage[], imagesToDelete: string[] = []) => {
     if (!editingProject) return;
     setLoading(true);
     try {
-      const project = await projectService.updateProject(editingProject.id, projectData);
+      // Filter out detailedDescription from project data since it's stored in project_content table
+      const { detailedDescription, ...projectUpdateData } = projectData;
+      
+      const project = await projectService.updateProject(editingProject.id, projectUpdateData);
+      
+      // Update detailed description in project_content
+      if (detailedDescription !== undefined) {
+        try {
+          const existingContent = await projectContentService.getProjectContent(editingProject.id);
+          const existingDesc = existingContent.find(c => c.section === 'project_description');
+          
+          if (existingDesc) {
+            // Update existing content
+            await projectContentService.updateProjectContent(existingDesc.id, {
+              content_hebrew: detailedDescription
+            });
+          } else {
+            // Create new content
+            await projectContentService.createProjectContent({
+              project_id: editingProject.id,
+              section: 'project_description',
+              content_hebrew: detailedDescription,
+              display_order: 1
+            });
+          }
+        } catch (error) {
+          console.error('Error updating project content:', error);
+        }
+      }
+      
+      // Delete images that were marked for deletion
+      if (imagesToDelete.length > 0) {
+        console.log('Deleting images:', imagesToDelete);
+        for (const imageId of imagesToDelete) {
+          await projectImageService.deleteProjectImage(imageId);
+        }
+      }
       
       // Update project images
       if (images.length > 0) {
@@ -175,6 +242,7 @@ export default function ManagementPage() {
       setEditingProject(null);
       setShowProjectForm(false);
       setProjectImages([]);
+      setDetailedDescription('');
       alert('פרויקט עודכן בהצלחה!');
     } catch (error) {
       console.error('Error updating project:', error);
@@ -298,6 +366,27 @@ export default function ManagementPage() {
                   >
                     הוסף פרויקט חדש
                   </button>
+                  <button
+                    onClick={async () => {
+                      // Test loading detailed description for athens-penthouse
+                      try {
+                        const projects = await projectService.getAllProjects();
+                        const athensPenthouse = projects.find(p => p.slug === 'athens-penthouse');
+                        if (athensPenthouse) {
+                          const content = await projectContentService.getProjectContent(athensPenthouse.id);
+                          const detailedDesc = content.find(c => c.section === 'project_description')?.content_hebrew || '';
+                          console.log('Test - Athens Penthouse detailed description:', detailedDesc);
+                          alert(`Found detailed description with ${detailedDesc.length} characters`);
+                        }
+                      } catch (error) {
+                        console.error('Test error:', error);
+                        alert('Error testing detailed description');
+                      }
+                    }}
+                    className="bg-blue-500 text-white py-3 px-6 rounded-lg hover:bg-blue-600 transition-colors font-semibold"
+                  >
+                    בדוק תיאור מפורט
+                  </button>
                 </div>
               </div>
             </div>
@@ -308,17 +397,27 @@ export default function ManagementPage() {
                 <div className="flex justify-between items-center mb-6">
                   <h2 className="text-2xl font-bold text-gray-800">{editingProject ? 'ערוך פרויקט' : 'הוסף פרויקט חדש'}</h2>
                 </div>
-                <ProjectForm
-                  initialData={editingProject ?? undefined}
-                  onSubmit={editingProject ? handleUpdateProject : handleCreateProject}
-                  onCancel={() => { 
-                    setShowProjectForm(false); 
-                    setEditingProject(null); 
-                    setProjectImages([]);
-                  }}
-                  loading={loading}
-                  initialImages={projectImages}
-                />
+                {editingProject && loadingDetailedDescription ? (
+                  <div className="text-center py-8">
+                    <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-amber-500 mx-auto mb-4"></div>
+                    <p className="text-gray-600">טוען תיאור מפורט...</p>
+                  </div>
+                ) : (
+                  <ProjectForm
+                    initialData={editingProject ?? undefined}
+                    onSubmit={editingProject ? handleUpdateProject : handleCreateProject}
+                    onCancel={() => { 
+                      setShowProjectForm(false); 
+                      setEditingProject(null); 
+                      setProjectImages([]);
+                      setDetailedDescription('');
+                      setLoadingDetailedDescription(false);
+                    }}
+                    loading={loading}
+                    initialImages={projectImages}
+                    initialDetailedDescription={detailedDescription}
+                  />
+                )}
               </div>
             )}
 
@@ -370,14 +469,16 @@ export default function ManagementPage() {
           <div className="space-y-8">
             <div className="bg-white p-6 rounded-lg shadow-lg border border-gray-200">
               <h2 className="text-2xl font-bold text-gray-800 mb-6">ניהול תוכן טקסט</h2>
-              {/* TextContentManager component was removed */}
+              <SiteContentManager />
             </div>
           </div>
         )}
         {activeTab === 'images' && (
-          <div className="bg-white p-8 rounded-lg shadow-lg border border-gray-200 text-center">
-            <h2 className="text-2xl font-bold text-gray-800 mb-4">ניהול תמונות</h2>
-            <p className="text-gray-600">(כאן תופיע מערכת ניהול התמונות)</p>
+          <div className="space-y-8">
+            <div className="bg-white p-6 rounded-lg shadow-lg border border-gray-200">
+              <h2 className="text-2xl font-bold text-gray-800 mb-6">ניהול תמונות האתר</h2>
+              <ImageManager />
+            </div>
           </div>
         )}
       </main>

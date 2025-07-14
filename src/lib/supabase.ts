@@ -19,12 +19,9 @@ export interface Project {
   id: string;
   slug: string;
   title: string;
-  title_en?: string;
   description: string;
-  description_en?: string;
   category: 'apartments' | 'private-homes' | 'other-projects' | 'concepts';
   location: string;
-  location_en?: string;
   size: string;
   featured: boolean;
   project_details?: Record<string, unknown>;
@@ -57,8 +54,16 @@ export interface SiteContent {
   id: string;
   key: string;
   hebrew: string;
-  english?: string;
   section: string;
+  created_at: string;
+  updated_at: string;
+}
+
+export interface SiteImage {
+  id: string;
+  key: string;
+  image_url: string;
+  alt_text?: string;
   created_at: string;
   updated_at: string;
 }
@@ -389,6 +394,63 @@ export const siteContentService = {
     
     if (error) throw error;
     return data;
+  }
+};
+
+// Site images functions
+export const siteImageService = {
+  async getAllSiteImages(): Promise<SiteImage[]> {
+    const { data, error } = await supabase
+      .from('site_images')
+      .select('*')
+      .order('key', { ascending: true });
+    
+    if (error) throw error;
+    return data || [];
+  },
+
+  async getSiteImageByKey(key: string): Promise<SiteImage | null> {
+    const { data, error } = await supabase
+      .from('site_images')
+      .select('*')
+      .eq('key', key)
+      .single();
+    
+    if (error) throw error;
+    return data;
+  },
+
+  async createSiteImage(image: Omit<SiteImage, 'id' | 'created_at' | 'updated_at'>) {
+    const { data, error } = await supabaseAdmin
+      .from('site_images')
+      .insert([image])
+      .select()
+      .single();
+    
+    if (error) throw error;
+    return data;
+  },
+
+  async updateSiteImage(id: string, updates: Partial<SiteImage>) {
+    const { data, error } = await supabaseAdmin
+      .from('site_images')
+      .update(updates)
+      .eq('id', id)
+      .select()
+      .single();
+    
+    if (error) throw error;
+    return data;
+  },
+
+  async deleteSiteImage(id: string) {
+    const { error } = await supabaseAdmin
+      .from('site_images')
+      .delete()
+      .eq('id', id);
+    
+    if (error) throw error;
+    return true;
   }
 };
 

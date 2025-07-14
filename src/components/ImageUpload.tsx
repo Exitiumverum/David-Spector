@@ -34,38 +34,57 @@ export default function ImageUpload({ onUploadComplete, onUploadError, className
     setUploading(true);
 
     try {
+      console.log('Starting image upload...');
+      console.log('File:', file.name, 'Size:', file.size, 'Type:', file.type);
+      
+      // Check if we have the service role key
+      if (!process.env.NEXT_PUBLIC_SUPABASE_SERVICE_ROLE_KEY) {
+        console.error('Missing service role key');
+        onUploadError('Configuration error: Missing service role key');
+        return;
+      }
+
       // Generate unique filename
       const timestamp = Date.now();
       const fileExtension = file.name.split('.').pop();
-      const fileName = `project-images/${timestamp}.${fileExtension}`;
+      const fileName = `${timestamp}.${fileExtension}`;
+
+      console.log('Uploading to bucket: project-images');
+      console.log('File path:', fileName);
 
       // Upload to Supabase Storage
-      const { error } = await supabaseAdmin.storage
-        .from('images')
+      const { data: uploadData, error: uploadError } = await supabaseAdmin.storage
+        .from('project-images')
         .upload(fileName, file, {
           cacheControl: '3600',
           upsert: false
         });
 
-      if (error) {
-        console.error('Upload error:', error);
-        onUploadError('Failed to upload image');
+      if (uploadError) {
+        console.error('Upload error:', uploadError);
+        onUploadError(`Failed to upload image: ${uploadError.message}`);
         return;
       }
 
+      console.log('Upload successful:', uploadData);
+
       // Get public URL
       const { data: urlData } = supabaseAdmin.storage
-        .from('images')
+        .from('project-images')
         .getPublicUrl(fileName);
 
+      console.log('Public URL data:', urlData);
+
       if (urlData?.publicUrl) {
+        console.log('Image uploaded successfully:', urlData.publicUrl);
         onUploadComplete(urlData.publicUrl);
       } else {
+        console.error('Failed to get public URL');
         onUploadError('Failed to get image URL');
       }
     } catch (error) {
       console.error('Upload error:', error);
-      onUploadError('Failed to upload image');
+      onUploadError(`Failed to upload image: ${error instanceof Error ? error.message : 'Unknown error'}`);
     } finally {
       setUploading(false);
     }
