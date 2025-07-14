@@ -3,21 +3,35 @@
 import Image from 'next/image';
 import { motion } from 'framer-motion';
 import { useState, useRef } from 'react';
+import { useSiteImage } from '@/hooks/useSiteImages';
 
 export default function ContactPage() {
+  // Fetch contact hero image
+  const { image: contactHeroImage, loading: imageLoading } = useSiteImage('contact_hero');
+
   return (
     <main className="min-h-screen bg-white text-gray-900">
       {/* Hero Section */}
       <section className="relative h-[40vh] flex items-center justify-center">
         <div className="absolute inset-0 z-0">
           <div className="absolute inset-0 bg-black/40" />
-          <Image
-            src="/images/Homes2/9.png"
-            alt="צור קשר"
-            fill
-            className="object-cover"
-            priority
-          />
+          {contactHeroImage?.image_url ? (
+            <Image
+              src={contactHeroImage.image_url}
+              alt={contactHeroImage.alt_text || "צור קשר"}
+              fill
+              className="object-cover"
+              priority
+            />
+          ) : (
+            <Image
+              src="/images/Homes2/9.png"
+              alt="צור קשר"
+              fill
+              className="object-cover"
+              priority
+            />
+          )}
         </div>
         <div className="relative z-10 text-center text-white px-4">
           <motion.h1 

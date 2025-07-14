@@ -10,6 +10,7 @@ import 'swiper/css/navigation';
 import 'swiper/css/pagination';
 import { useEffect, useState } from 'react';
 import { projectService, siteContentService, Project } from '@/lib/supabase';
+import { useSiteImages } from '@/hooks/useSiteImages';
 
 // Component that tries multiple image extensions
 const ProjectImage = ({ projectSlug, projectTitle }: { projectSlug: string; projectTitle: string }) => {
@@ -54,6 +55,9 @@ export default function Home() {
   const [featuredProjects, setFeaturedProjects] = useState<Project[]>([]);
   const [siteContent, setSiteContent] = useState<Record<string, string>>({});
   const [loading, setLoading] = useState(true);
+  
+  // Fetch site images
+  const { images: siteImages, loading: imagesLoading } = useSiteImages(['home_banner', 'profile_picture', 'contact_hero']);
 
   useEffect(() => {
     const fetchData = async () => {
@@ -79,7 +83,7 @@ export default function Home() {
     fetchData();
   }, []);
 
-  if (loading) {
+  if (loading || imagesLoading) {
     return (
       <div className="min-h-screen bg-white flex items-center justify-center">
         <div className="animate-pulse text-yellow-600 text-xl">טוען...</div>
@@ -93,13 +97,23 @@ export default function Home() {
       <section className="relative h-screen flex items-center justify-center">
         <div className="absolute inset-0 z-0">
           <div className="absolute inset-0 bg-black/50" />
-          <Image
-            src="/images/Homes2/10.jpg"
-            alt="רקע אדריכלי"
-            fill
-            className="object-cover"
-            priority
-          />
+          {siteImages.home_banner?.image_url ? (
+            <Image
+              src={siteImages.home_banner.image_url}
+              alt={siteImages.home_banner.alt_text || "רקע אדריכלי"}
+              fill
+              className="object-cover"
+              priority
+            />
+          ) : (
+            <Image
+              src="/images/Homes2/10.jpg"
+              alt="רקע אדריכלי"
+              fill
+              className="object-cover"
+              priority
+            />
+          )}
         </div>
         <div className="relative z-10 text-center text-white px-4">
           <h1 className="text-5xl md:text-7xl font-light mb-4">
@@ -134,12 +148,21 @@ export default function Home() {
             </div>
           </div>
           <div className="relative h-[400px]">
-            <Image
-              src="/images/Logos/DavidSpector.jpeg"
-              alt="דוד ספקטור"
-              fill
-              className="object-cover"
-            />
+            {siteImages.profile_picture?.image_url ? (
+              <Image
+                src={siteImages.profile_picture.image_url}
+                alt={siteImages.profile_picture.alt_text || "דוד ספקטור"}
+                fill
+                className="object-cover"
+              />
+            ) : (
+              <Image
+                src="/images/Logos/DavidSpector.jpeg"
+                alt="דוד ספקטור"
+                fill
+                className="object-cover"
+              />
+            )}
           </div>
         </div>
       </section>

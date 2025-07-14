@@ -7,15 +7,13 @@ import { ProjectImage } from '@/lib/supabase';
 
 interface ProjectFormData {
   title: string;
-  title_en: string;
   description: string;
-  description_en: string;
   category: 'apartments' | 'private-homes' | 'other-projects' | 'concepts';
   location: string;
-  location_en: string;
   size: string;
   featured: boolean;
   slug: string;
+  detailedDescription?: string; // Add detailed description field
 }
 
 interface BeforeAfterPair {
@@ -26,26 +24,28 @@ interface BeforeAfterPair {
 }
 
 interface ProjectFormProps {
-  onSubmit: (projectData: ProjectFormData, images: ProjectImage[]) => void;
+  onSubmit: (projectData: ProjectFormData, images: ProjectImage[], imagesToDelete: string[]) => void;
   onCancel: () => void;
   loading?: boolean;
   initialData?: Partial<ProjectFormData>;
   initialImages?: ProjectImage[];
+  initialDetailedDescription?: string; // Add prop for detailed description
 }
 
-export default function ProjectForm({ onSubmit, onCancel, loading = false, initialData, initialImages = [] }: ProjectFormProps) {
+export default function ProjectForm({ onSubmit, onCancel, loading = false, initialData, initialImages = [], initialDetailedDescription = '' }: ProjectFormProps) {
   const [formData, setFormData] = useState<ProjectFormData>({
     title: initialData?.title || '',
-    title_en: initialData?.title_en || '',
     description: initialData?.description || '',
-    description_en: initialData?.description_en || '',
     category: initialData?.category || 'apartments',
     location: initialData?.location || '',
-    location_en: initialData?.location_en || '',
     size: initialData?.size || '',
     featured: initialData?.featured || false,
-    slug: initialData?.slug || ''
+    slug: initialData?.slug || '',
+    detailedDescription: initialDetailedDescription
   });
+
+  // Track images to be deleted (for existing projects)
+  const [imagesToDelete, setImagesToDelete] = useState<string[]>([]);
 
   // Process initial images into the expected format
   const processInitialImages = useCallback(() => {
@@ -145,7 +145,14 @@ export default function ProjectForm({ onSubmit, onCancel, loading = false, initi
   useEffect(() => {
     console.log('initialImages changed:', initialImages);
     setImages(processInitialImages());
+    setImagesToDelete([]); // Reset deleted images when initial images change
   }, [initialImages, processInitialImages]);
+
+  // Update form data when initialDetailedDescription changes
+  useEffect(() => {
+    console.log('initialDetailedDescription changed:', initialDetailedDescription);
+    setFormData(prev => ({ ...prev, detailedDescription: initialDetailedDescription }));
+  }, [initialDetailedDescription]);
 
   const handleInputChange = (field: keyof ProjectFormData, value: string | boolean) => {
     setFormData(prev => ({ ...prev, [field]: value }));
@@ -168,8 +175,18 @@ export default function ProjectForm({ onSubmit, onCancel, loading = false, initi
 
   const handleImageRemove = (type: 'banner' | 'gallery', index?: number) => {
     if (type === 'banner') {
+      // If editing an existing project and banner exists, mark it for deletion
+      const bannerImage = initialImages.find(img => img.image_type === 'banner');
+      if (bannerImage && initialData) {
+        setImagesToDelete(prev => [...prev, bannerImage.id]);
+      }
       setImages(prev => ({ ...prev, banner: undefined }));
     } else {
+      // If editing an existing project and gallery image exists, mark it for deletion
+      const galleryImages = initialImages.filter(img => img.image_type === 'gallery');
+      if (index !== undefined && galleryImages[index] && initialData) {
+        setImagesToDelete(prev => [...prev, galleryImages[index].id]);
+      }
       setImages(prev => ({
         ...prev,
         gallery: prev.gallery.filter((_, i) => i !== index)
@@ -191,6 +208,16 @@ export default function ProjectForm({ onSubmit, onCancel, loading = false, initi
   };
 
   const removeBeforeAfterPair = (pairId: string) => {
+    const pair = images.beforeAfterPairs.find(p => p.id === pairId);
+    if (pair) {
+      // If editing an existing project and images exist, mark them for deletion
+      if (initialData) {
+        const beforeImage = initialImages.find(img => img.image_url === pair.before && img.image_type === 'before');
+        const afterImage = initialImages.find(img => img.image_url === pair.after && img.image_type === 'after');
+        if (beforeImage) setImagesToDelete(prev => [...prev, beforeImage.id]);
+        if (afterImage) setImagesToDelete(prev => [...prev, afterImage.id]);
+      }
+    }
     setImages(prev => ({
       ...prev,
       beforeAfterPairs: prev.beforeAfterPairs.filter(pair => pair.id !== pairId)
@@ -198,6 +225,19 @@ export default function ProjectForm({ onSubmit, onCancel, loading = false, initi
   };
 
   const updateBeforeAfterPair = (pairId: string, field: 'before' | 'after' | 'title', value: string) => {
+    const pair = images.beforeAfterPairs.find(p => p.id === pairId);
+    if (pair && initialData) {
+      // If editing an existing project and removing an image, mark it for deletion
+      if (field === 'before' && pair.before && !value) {
+        const beforeImage = initialImages.find(img => img.image_url === pair.before && img.image_type === 'before');
+        if (beforeImage) setImagesToDelete(prev => [...prev, beforeImage.id]);
+      }
+      if (field === 'after' && pair.after && !value) {
+        const afterImage = initialImages.find(img => img.image_url === pair.after && img.image_type === 'after');
+        if (afterImage) setImagesToDelete(prev => [...prev, afterImage.id]);
+      }
+    }
+    
     setImages(prev => ({
       ...prev,
       beforeAfterPairs: prev.beforeAfterPairs.map(pair => 
@@ -272,7 +312,8 @@ export default function ProjectForm({ onSubmit, onCancel, loading = false, initi
       }
     });
 
-    onSubmit(formData, projectImages);
+    // Pass imagesToDelete along with the project data
+    onSubmit(formData, projectImages, imagesToDelete);
   };
 
   return (
@@ -282,7 +323,7 @@ export default function ProjectForm({ onSubmit, onCancel, loading = false, initi
         <h3 className="text-xl font-bold text-gray-800 mb-6">מידע בסיסי</h3>
         <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
           <div>
-            <label className="block text-sm font-semibold text-gray-700 mb-2">כותרת הפרויקט (עברית) *</label>
+            <label className="block text-sm font-semibold text-gray-700 mb-2">כותרת הפרויקט *</label>
             <input
               type="text"
               value={formData.title}
@@ -293,17 +334,6 @@ export default function ProjectForm({ onSubmit, onCancel, loading = false, initi
               placeholder="כותרת הפרויקט"
             />
             {errors.title && <p className="text-red-500 text-sm mt-1">{errors.title}</p>}
-          </div>
-
-          <div>
-            <label className="block text-sm font-semibold text-gray-700 mb-2">כותרת הפרויקט (אנגלית)</label>
-            <input
-              type="text"
-              value={formData.title_en}
-              onChange={(e) => handleInputChange('title_en', e.target.value)}
-              className="w-full p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-amber-500 focus:border-transparent text-gray-900"
-              placeholder="Project Title"
-            />
           </div>
 
           <div>
@@ -352,17 +382,6 @@ export default function ProjectForm({ onSubmit, onCancel, loading = false, initi
           </div>
 
           <div>
-            <label className="block text-sm font-semibold text-gray-700 mb-2">מיקום (אנגלית)</label>
-            <input
-              type="text"
-              value={formData.location_en}
-              onChange={(e) => handleInputChange('location_en', e.target.value)}
-              className="w-full p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-amber-500 focus:border-transparent text-gray-900"
-              placeholder="Tel Aviv"
-            />
-          </div>
-
-          <div>
             <label className="block text-sm font-semibold text-gray-700 mb-2">גודל</label>
             <input
               type="text"
@@ -386,28 +405,32 @@ export default function ProjectForm({ onSubmit, onCancel, loading = false, initi
         </div>
 
         <div className="mt-6">
-          <label className="block text-sm font-semibold text-gray-700 mb-2">תיאור הפרויקט (עברית) *</label>
+          <label className="block text-sm font-semibold text-gray-700 mb-2">תיאור קצר *</label>
           <textarea
             value={formData.description}
             onChange={(e) => handleInputChange('description', e.target.value)}
             className={`w-full p-3 border rounded-lg focus:ring-2 focus:ring-amber-500 focus:border-transparent text-gray-900 ${
               errors.description ? 'border-red-500' : 'border-gray-300'
             }`}
-            rows={4}
-            placeholder="תיאור מפורט של הפרויקט..."
+            rows={3}
+            placeholder="תיאור קצר של הפרויקט (יופיע ברשימת הפרויקטים)..."
           />
           {errors.description && <p className="text-red-500 text-sm mt-1">{errors.description}</p>}
         </div>
 
         <div className="mt-6">
-          <label className="block text-sm font-semibold text-gray-700 mb-2">תיאור הפרויקט (אנגלית)</label>
+          <label className="block text-sm font-semibold text-gray-700 mb-2">תיאור מפורט - סעיף "הפרויקט"</label>
           <textarea
-            value={formData.description_en}
-            onChange={(e) => handleInputChange('description_en', e.target.value)}
+            value={formData.detailedDescription || ''}
+            onChange={(e) => handleInputChange('detailedDescription', e.target.value)}
             className="w-full p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-amber-500 focus:border-transparent text-gray-900"
-            rows={4}
-            placeholder="Detailed project description..."
+            rows={8}
+            placeholder={formData.detailedDescription ? '' : "תיאור מפורט של הפרויקט (יופיע בדף הפרויקט בסעיף 'הפרויקט')..."}
           />
+          <p className="text-sm text-gray-500 mt-1">תיאור זה יופיע בדף הפרויקט בסעיף "הפרויקט" - התוכן המפורט של הפרויקט</p>
+          {formData.detailedDescription && (
+            <p className="text-xs text-green-600 mt-1">✓ תוכן קיים: {formData.detailedDescription.length} תווים</p>
+          )}
         </div>
       </div>
 
