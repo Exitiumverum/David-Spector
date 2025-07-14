@@ -24,7 +24,7 @@ interface BeforeAfterPair {
 }
 
 interface ProjectFormProps {
-  onSubmit: (projectData: ProjectFormData, images: ProjectImage[], imagesToDelete: string[]) => void;
+  onSubmit: (projectData: ProjectFormData, images: ProjectImage[], imagesToDelete?: string[]) => void;
   onCancel: () => void;
   loading?: boolean;
   initialData?: Partial<ProjectFormData>;
@@ -419,7 +419,7 @@ export default function ProjectForm({ onSubmit, onCancel, loading = false, initi
         </div>
 
         <div className="mt-6">
-          <label className="block text-sm font-semibold text-gray-700 mb-2">תיאור מפורט - סעיף "הפרויקט"</label>
+          <label className="block text-sm font-semibold text-gray-700 mb-2">תיאור מפורט - סעיף &quot;הפרויקט&quot;</label>
           <textarea
             value={formData.detailedDescription || ''}
             onChange={(e) => handleInputChange('detailedDescription', e.target.value)}
@@ -427,7 +427,7 @@ export default function ProjectForm({ onSubmit, onCancel, loading = false, initi
             rows={8}
             placeholder={formData.detailedDescription ? '' : "תיאור מפורט של הפרויקט (יופיע בדף הפרויקט בסעיף 'הפרויקט')..."}
           />
-          <p className="text-sm text-gray-500 mt-1">תיאור זה יופיע בדף הפרויקט בסעיף "הפרויקט" - התוכן המפורט של הפרויקט</p>
+          <p className="text-sm text-gray-500 mt-1">תיאור זה יופיע בדף הפרויקט בסעיף &quot;הפרויקט&quot; - התוכן המפורט של הפרויקט</p>
           {formData.detailedDescription && (
             <p className="text-xs text-green-600 mt-1">✓ תוכן קיים: {formData.detailedDescription.length} תווים</p>
           )}

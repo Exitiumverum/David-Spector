@@ -8,7 +8,7 @@ interface AuthContextType {
   user: User | null;
   session: Session | null;
   loading: boolean;
-  signIn: (email: string, password: string) => Promise<{ error: any }>;
+  signIn: (email: string, password: string) => Promise<{ error: Error | null }>;
   signOut: () => Promise<void>;
   isAdmin: boolean;
 }
@@ -20,14 +20,11 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
   const [session, setSession] = useState<Session | null>(null);
   const [loading, setLoading] = useState(true);
   const [isAdmin, setIsAdmin] = useState(false);
-  const [mounted, setMounted] = useState(false);
 
   // Define admin email - use environment variable or fallback
   const adminEmail = process.env.NEXT_PUBLIC_ADMIN_EMAIL || 'admin@davidspector.com';
 
   useEffect(() => {
-    setMounted(true);
-    
     // Get initial session
     const getInitialSession = async () => {
       try {
@@ -74,10 +71,10 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
         setIsAdmin(userIsAdmin);
       }
       
-      return { error };
+      return { error: error as Error | null };
     } catch (error) {
       console.error('Sign in error:', error);
-      return { error };
+      return { error: error as Error };
     }
   };
 

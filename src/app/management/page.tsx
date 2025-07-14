@@ -46,7 +46,7 @@ export default function ManagementPage() {
     try {
       const data = await projectService.getAllProjects();
       setProjects(data);
-    } catch (error) {
+    } catch {
       alert('שגיאה בטעינת הפרויקטים');
     } finally {
       setLoading(false);
@@ -57,12 +57,12 @@ export default function ManagementPage() {
     try {
       const images = await projectImageService.getProjectImages(projectId);
       setProjectImages(images);
-    } catch (error) {
+    } catch {
       setProjectImages([]);
     }
   };
 
-  const handleCreateProject = async (projectData: ProjectFormData, images: ProjectImage[], imagesToDelete: string[] = []) => {
+  const handleCreateProject = async (projectData: ProjectFormData, images: ProjectImage[]) => {
     setLoading(true);
     try {
       // Filter out detailedDescription from project data since it's stored in project_content table
@@ -93,7 +93,7 @@ export default function ManagementPage() {
       setProjects((prev) => [...prev, project]);
       setShowProjectForm(false);
       alert('פרויקט נוסף בהצלחה!');
-    } catch (error) {
+    } catch {
       alert('שגיאה ביצירת הפרויקט');
     } finally {
       setLoading(false);
@@ -112,7 +112,7 @@ export default function ManagementPage() {
       const projectContent = await projectContentService.getProjectContent(project.id);
       const detailedDesc = projectContent.find(c => c.section === 'project_description')?.content_hebrew || '';
       setDetailedDescription(detailedDesc);
-    } catch (error) {
+    } catch {
       setDetailedDescription('');
     } finally {
       setLoadingDetailedDescription(false);
@@ -148,8 +148,8 @@ export default function ManagementPage() {
               display_order: 1
             });
           }
-        } catch (error) {
-          console.error('Error updating project content:', error);
+        } catch {
+          console.error('Error updating project content');
         }
       }
       
@@ -176,7 +176,7 @@ export default function ManagementPage() {
       setProjectImages([]);
       setDetailedDescription('');
       alert('פרויקט עודכן בהצלחה!');
-    } catch (error) {
+    } catch {
       alert('שגיאה בעדכון הפרויקט');
     } finally {
       setLoading(false);
@@ -190,7 +190,7 @@ export default function ManagementPage() {
       await projectService.deleteProject(id);
       setProjects((prev) => prev.filter((p) => p.id !== id));
       alert('פרויקט נמחק בהצלחה!');
-    } catch (error) {
+    } catch {
       alert('שגיאה במחיקת הפרויקט');
     } finally {
       setLoading(false);

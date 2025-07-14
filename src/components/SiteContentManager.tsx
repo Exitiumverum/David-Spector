@@ -163,7 +163,7 @@ export default function SiteContentManager() {
         <h3 className="text-lg font-semibold text-blue-800 mb-2">סיכום תוכן</h3>
         <div className="grid grid-cols-1 md:grid-cols-3 gap-4 text-sm">
           <div>
-            <span className="font-medium text-blue-700">סה"כ תכנים:</span>
+            <span className="font-medium text-blue-700">סה&quot;כ תכנים:</span>
             <span className="mr-2 text-blue-600">{content.length}</span>
           </div>
           <div>
@@ -200,7 +200,6 @@ export default function SiteContentManager() {
           const existingContent = getContent(section.key);
           const defaultContent = DEFAULT_CONTENT[section.key];
           const isEditing = editingKey === section.key;
-          const hasContent = existingContent?.hebrew || defaultContent?.hebrew;
           const displayContent = existingContent?.hebrew || defaultContent?.hebrew || 'לא נוסף תוכן עדיין';
 
           return (

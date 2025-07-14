@@ -21,7 +21,7 @@ export default function LoginForm() {
       if (error) {
         setError(error.message || 'שגיאה בהתחברות');
       }
-    } catch (err) {
+    } catch {
       setError('שגיאה בהתחברות');
     } finally {
       setLoading(false);

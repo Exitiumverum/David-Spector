@@ -120,7 +120,7 @@ export default function ImageManager() {
         <h3 className="text-lg font-semibold text-blue-800 mb-2">ניהול תמונות האתר</h3>
         <div className="grid grid-cols-1 md:grid-cols-2 gap-4 text-sm">
           <div>
-            <span className="font-medium text-blue-700">סה"כ תמונות:</span>
+            <span className="font-medium text-blue-700">סה&quot;כ תמונות:</span>
             <span className="mr-2 text-blue-600">{images.length}</span>
           </div>
           <div>

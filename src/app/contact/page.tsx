@@ -7,7 +7,7 @@ import { useSiteImage } from '@/hooks/useSiteImages';
 
 export default function ContactPage() {
   // Fetch contact hero image
-  const { image: contactHeroImage, loading: imageLoading } = useSiteImage('contact_hero');
+  const { image: contactHeroImage } = useSiteImage('contact_hero');
 
   return (
     <main className="min-h-screen bg-white text-gray-900">
