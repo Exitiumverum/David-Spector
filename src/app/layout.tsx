@@ -4,6 +4,7 @@ import { Dancing_Script } from "next/font/google";
 import "./globals.css";
 import ConditionalNavigation from "@/components/ConditionalNavigation";
 import ConditionalContactModal from "@/components/ConditionalContactModal";
+import AuthWrapper from "@/components/AuthWrapper";
 
 const inter = Inter({ subsets: ["latin"] });
 const dancingScript = Dancing_Script({ 
@@ -30,9 +31,11 @@ export default function RootLayout({
         <link rel="icon" href="/images/Logos/logoPng.png" type="image/png" />
       </head>
       <body className={`${inter.className} ${dancingScript.variable}`}>
-        <ConditionalNavigation />
-        {children}
-        <ConditionalContactModal />
+        <AuthWrapper>
+          <ConditionalNavigation />
+          {children}
+          <ConditionalContactModal />
+        </AuthWrapper>
       </body>
     </html>
   );
